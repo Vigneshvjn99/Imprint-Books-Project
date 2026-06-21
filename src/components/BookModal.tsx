@@ -373,7 +373,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
         }
         @media (min-width: 1900px) {
           :root {
-            --book-height: calc(${isTwoLines ? '22vw' : '25vw'} / var(--book-aspect));
+            --book-height: ${isTwoLines ? '33vw' : '37.5vw'};
             --card-max-width: 440px;
             --card-height: 310px;
             --card-icon-size: 42px;
