@@ -334,7 +334,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
       {/* LEFT SECTION: Title, Author & Bottom-aligned 3D Mockup */}
       <div className="w-full md:w-[49%] h-1/2 md:h-full relative bg-transparent flex flex-col justify-between p-8 md:p-12 lg:p-16 xl:p-20 pointer-events-none z-20">
         {/* Title and Author Group */}
-        <div className="max-w-[500px]">
+        <div className="max-w-[600px]">
           <TextType
             as="h2"
             text={book.title}
