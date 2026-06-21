@@ -164,30 +164,6 @@ function App() {
 
         <div className="w-[1px] h-6 bg-black/10 dark:bg-white/10 mx-0.5 shrink-0" />
 
-        {/* Theme Toggle Group */}
-        <div className="flex items-center gap-0.5">
-          <button 
-            onClick={() => setTheme('light')}
-            className={`relative flex items-center justify-center w-10 h-10 rounded-full z-10 transition-colors ${theme === 'light' ? 'text-black dark:text-white' : 'text-black/50 dark:text-white/50 hover:bg-black/5 dark:hover:bg-white/5 hover:text-black dark:hover:text-white'}`}
-          >
-            {theme === 'light' && (
-              <motion.div layoutId="theme-active" className="absolute inset-0 bg-black/8 dark:bg-white/10 rounded-full" transition={{ type: "spring", bounce: 0.2, duration: 0.6 }} />
-            )}
-            <Sun size={18} className="relative z-10" />
-          </button>
-          <button 
-            onClick={() => setTheme('dark')}
-            className={`relative flex items-center justify-center w-10 h-10 rounded-full z-10 transition-colors ${theme === 'dark' ? 'text-black dark:text-white' : 'text-black/50 dark:text-white/50 hover:bg-black/5 dark:hover:bg-white/5 hover:text-black dark:hover:text-white'}`}
-          >
-            {theme === 'dark' && (
-              <motion.div layoutId="theme-active" className="absolute inset-0 bg-black/8 dark:bg-white/10 rounded-full" transition={{ type: "spring", bounce: 0.2, duration: 0.6 }} />
-            )}
-            <Moon size={18} className="relative z-10" />
-          </button>
-        </div>
-
-        <div className="w-[1px] h-6 bg-black/10 dark:bg-white/10 mx-0.5" />
-
         {/* Book Type Filter Dropdown */}
         <div className="relative">
           <button 
@@ -226,7 +202,7 @@ function App() {
           </AnimatePresence>
         </div>
 
-        <div className="w-[1px] h-6 bg-black/10 dark:bg-white/10 mx-0.5" />
+        <div className="w-[1px] h-6 bg-black/10 dark:bg-white/10 mx-0.5 shrink-0" />
 
         {/* Search Bar */}
         <div className="flex items-center gap-2 px-4 h-10 rounded-full bg-black/5 dark:bg-white/5 w-[200px] focus-within:ring-2 focus-within:ring-black/10 dark:focus-within:ring-white/20 transition-all">
@@ -238,6 +214,30 @@ function App() {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="bg-transparent border-none outline-none font-medium text-[14px] text-black dark:text-white w-full placeholder:text-black/50 dark:placeholder:text-white/50"
           />
+        </div>
+
+        <div className="w-[1px] h-6 bg-black/10 dark:bg-white/10 mx-0.5 shrink-0" />
+
+        {/* Theme Toggle Group */}
+        <div className="flex items-center gap-0.5 pr-0.5">
+          <button 
+            onClick={() => setTheme('light')}
+            className={`relative flex items-center justify-center w-10 h-10 rounded-full z-10 transition-colors ${theme === 'light' ? 'text-black dark:text-white' : 'text-black/50 dark:text-white/50 hover:bg-black/5 dark:hover:bg-white/5 hover:text-black dark:hover:text-white'}`}
+          >
+            {theme === 'light' && (
+              <motion.div layoutId="theme-active" className="absolute inset-0 bg-black/8 dark:bg-white/10 rounded-full" transition={{ type: "spring", bounce: 0.2, duration: 0.6 }} />
+            )}
+            <Sun size={18} className="relative z-10" />
+          </button>
+          <button 
+            onClick={() => setTheme('dark')}
+            className={`relative flex items-center justify-center w-10 h-10 rounded-full z-10 transition-colors ${theme === 'dark' ? 'text-black dark:text-white' : 'text-black/50 dark:text-white/50 hover:bg-black/5 dark:hover:bg-white/5 hover:text-black dark:hover:text-white'}`}
+          >
+            {theme === 'dark' && (
+              <motion.div layoutId="theme-active" className="absolute inset-0 bg-black/8 dark:bg-white/10 rounded-full" transition={{ type: "spring", bounce: 0.2, duration: 0.6 }} />
+            )}
+            <Moon size={18} className="relative z-10" />
+          </button>
         </div>
 
       </div>
