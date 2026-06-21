@@ -1,0 +1,130 @@
+{
+  "128:6": {
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "<rounded-rectangle id=\"128:6\" name=\"image 19\" x=\"21964\" y=\"1628\" width=\"977\" height=\"1500\" />"
+        },
+        {
+          "type": "text",
+          "text": "IMPORTANT: After you call this tool, you MUST call get_design_context if trying to implement the design, since this tool only returns metadata. If you do not call get_design_context, the agent will not be able to implement the design."
+        }
+      ]
+    },
+    "jsonrpc": "2.0",
+    "id": 99
+  },
+  "127:3": {
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "<rounded-rectangle id=\"127:3\" name=\"image 18\" x=\"20780\" y=\"1628\" width=\"993\" height=\"1206\" />"
+        },
+        {
+          "type": "text",
+          "text": "IMPORTANT: After you call this tool, you MUST call get_design_context if trying to implement the design, since this tool only returns metadata. If you do not call get_design_context, the agent will not be able to implement the design."
+        }
+      ]
+    },
+    "jsonrpc": "2.0",
+    "id": 99
+  },
+  "128:15": {
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "<rounded-rectangle id=\"128:15\" name=\"image 22\" x=\"25523\" y=\"1628\" width=\"936\" height=\"1128\" />"
+        },
+        {
+          "type": "text",
+          "text": "IMPORTANT: After you call this tool, you MUST call get_design_context if trying to implement the design, since this tool only returns metadata. If you do not call get_design_context, the agent will not be able to implement the design."
+        }
+      ]
+    },
+    "jsonrpc": "2.0",
+    "id": 99
+  },
+  "128:12": {
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "<rounded-rectangle id=\"128:12\" name=\"image 21\" x=\"24301\" y=\"1628\" width=\"978\" height=\"1242\" />"
+        },
+        {
+          "type": "text",
+          "text": "IMPORTANT: After you call this tool, you MUST call get_design_context if trying to implement the design, since this tool only returns metadata. If you do not call get_design_context, the agent will not be able to implement the design."
+        }
+      ]
+    },
+    "jsonrpc": "2.0",
+    "id": 99
+  },
+  "128:9": {
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "<rounded-rectangle id=\"128:9\" name=\"image 20\" x=\"23132\" y=\"1628\" width=\"978\" height=\"1500\" />"
+        },
+        {
+          "type": "text",
+          "text": "IMPORTANT: After you call this tool, you MUST call get_design_context if trying to implement the design, since this tool only returns metadata. If you do not call get_design_context, the agent will not be able to implement the design."
+        }
+      ]
+    },
+    "jsonrpc": "2.0",
+    "id": 99
+  },
+  "128:18": {
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "<rounded-rectangle id=\"128:18\" name=\"image 23\" x=\"26622\" y=\"1628\" width=\"936\" height=\"1136\" />"
+        },
+        {
+          "type": "text",
+          "text": "IMPORTANT: After you call this tool, you MUST call get_design_context if trying to implement the design, since this tool only returns metadata. If you do not call get_design_context, the agent will not be able to implement the design."
+        }
+      ]
+    },
+    "jsonrpc": "2.0",
+    "id": 99
+  },
+  "128:21": {
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "<rounded-rectangle id=\"128:21\" name=\"image 24\" x=\"27721\" y=\"1628\" width=\"978\" height=\"1506\" />"
+        },
+        {
+          "type": "text",
+          "text": "IMPORTANT: After you call this tool, you MUST call get_design_context if trying to implement the design, since this tool only returns metadata. If you do not call get_design_context, the agent will not be able to implement the design."
+        }
+      ]
+    },
+    "jsonrpc": "2.0",
+    "id": 99
+  },
+  "128:24": {
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "<rounded-rectangle id=\"128:24\" name=\"image 25\" x=\"28824\" y=\"1628\" width=\"978\" height=\"1142\" />"
+        },
+        {
+          "type": "text",
+          "text": "IMPORTANT: After you call this tool, you MUST call get_design_context if trying to implement the design, since this tool only returns metadata. If you do not call get_design_context, the agent will not be able to implement the design."
+        }
+      ]
+    },
+    "jsonrpc": "2.0",
+    "id": 99
+  }
+}
