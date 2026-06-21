@@ -12,9 +12,9 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
-  // Springs — slightly tighter for crisp drag response
-  const x = useSpring(0, { stiffness: 120, damping: 26, mass: 0.6 });
-  const y = useSpring(0, { stiffness: 120, damping: 26, mass: 0.6 });
+  // Springs — tight and responsive for both drag and scroll
+  const x = useSpring(0, { stiffness: 200, damping: 28, mass: 0.4 });
+  const y = useSpring(0, { stiffness: 200, damping: 28, mass: 0.4 });
 
   // Inertia state
   const velX = useRef(0);
@@ -41,8 +41,8 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
   const startInertia = useCallback(() => {
     if (rafId.current !== null) cancelAnimationFrame(rafId.current);
 
-    const FRICTION = 0.93; // higher = more glide, lower = snappier stop
-    const MIN_VEL = 0.3;   // stop threshold in px
+    const FRICTION = 0.88; // lower = decelerates faster / feels snappier
+    const MIN_VEL = 0.5;   // stop threshold in px
 
     const loop = () => {
       velX.current *= FRICTION;
@@ -93,17 +93,17 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
         const timeDelta = now - lastWheelTime.current;
         lastWheelTime.current = now;
 
-        // If events come very fast (< 30ms apart) it's a trackpad — use raw delta
-        // If events are slow/chunky (> 80ms apart) it's a mouse wheel — dampen it
-        const isMouseWheel = timeDelta > 80;
-        const scale = isMouseWheel ? 0.35 : 1.0;
+        // If events come very fast (< 50ms apart) it's a trackpad — boost it
+        // If events are slow/chunky (> 50ms apart) it's a mouse wheel — moderate boost
+        const isMouseWheel = timeDelta > 50;
+        const scale = isMouseWheel ? 0.8 : 2.5;
 
         // Accumulate into velocity
         velX.current -= dx * scale;
         velY.current -= dy * scale;
 
-        // Clamp max velocity so fast swipes don't overshoot
-        const MAX_VEL = 80;
+        // Clamp max velocity — higher ceiling for fast swipes
+        const MAX_VEL = 200;
         velX.current = clamp(velX.current, -MAX_VEL, MAX_VEL);
         velY.current = clamp(velY.current, -MAX_VEL, MAX_VEL);
 
