@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import type { Book } from './BookCard';
@@ -33,10 +33,31 @@ export function BookModal({ book, onClose }: BookModalProps) {
 
   // Typewriter completion tracking
   const [isTitleFinished, setIsTitleFinished] = useState(false);
+  const [isTwoLines, setIsTwoLines] = useState(false);
+  const titleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsTitleFinished(false);
   }, [book.title]);
+
+  useEffect(() => {
+    const measureTitle = () => {
+      if (titleRef.current) {
+        const height = titleRef.current.clientHeight;
+        const fontSize = parseFloat(window.getComputedStyle(titleRef.current).fontSize);
+        // If title height is more than 1.35x font size, it is wrapped onto 2 or more lines
+        setIsTwoLines(height > fontSize * 1.35);
+      }
+    };
+
+    const timer = setTimeout(measureTitle, 60);
+
+    window.addEventListener('resize', measureTitle);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', measureTitle);
+    };
+  }, [book.title, isTitleFinished]);
 
   // Prevent scrolling on the body while modal is open
   useEffect(() => {
@@ -287,34 +308,34 @@ export function BookModal({ book, onClose }: BookModalProps) {
       {/* Responsive layout constants injected */}
       <style>{`
         :root {
-          --book-height: 245px;
+          --book-height: ${isTwoLines ? '205px' : '245px'};
           --card-max-width: 320px;
           --card-height: 260px;
         }
         @media (min-width: 768px) {
           :root {
-            --book-height: 370px;
+            --book-height: ${isTwoLines ? '310px' : '370px'};
             --card-max-width: 400px;
             --card-height: 290px;
           }
         }
         @media (min-width: 1024px) {
           :root {
-            --book-height: 485px;
+            --book-height: ${isTwoLines ? '410px' : '485px'};
             --card-max-width: 450px;
             --card-height: 320px;
           }
         }
         @media (min-width: 1280px) {
           :root {
-            --book-height: 580px;
+            --book-height: ${isTwoLines ? '490px' : '580px'};
             --card-max-width: 480px;
             --card-height: 340px;
           }
         }
         @media (min-width: 1536px) {
           :root {
-            --book-height: 650px;
+            --book-height: ${isTwoLines ? '550px' : '650px'};
             --card-max-width: 480px;
             --card-height: 340px;
           }
@@ -335,18 +356,20 @@ export function BookModal({ book, onClose }: BookModalProps) {
       <div className="w-full md:w-[49%] h-1/2 md:h-full relative bg-transparent flex flex-col justify-between p-8 md:p-12 lg:p-16 xl:p-20 pointer-events-none z-20">
         {/* Title and Author Group */}
         <div className="max-w-[600px]">
-          <TextType
-            as="h2"
-            text={book.title}
-            loop={false}
-            typingSpeed={55}
-            initialDelay={200}
-            showCursor={!isTitleFinished}
-            cursorCharacter="|"
-            preserveLayout={true}
-            className={`${titleClass} font-semibold tracking-tight text-black dark:text-white font-sans break-words`}
-            onSentenceComplete={() => setIsTitleFinished(true)}
-          />
+          <div ref={titleRef}>
+            <TextType
+              as="h2"
+              text={book.title}
+              loop={false}
+              typingSpeed={55}
+              initialDelay={200}
+              showCursor={!isTitleFinished}
+              cursorCharacter="|"
+              preserveLayout={true}
+              className={`${titleClass} font-semibold tracking-tight text-black dark:text-white font-sans break-words`}
+              onSentenceComplete={() => setIsTitleFinished(true)}
+            />
+          </div>
           <motion.p 
             initial={{ opacity: 0, y: 4 }}
             animate={{ 
@@ -384,7 +407,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
             style={{ 
               perspective: '1200px',
               '--book-aspect': (book.width && book.height) ? (book.width / book.height) : (222 / 334),
-              marginBottom: 'calc(-0.15 * var(--book-height))'
+              marginBottom: isTwoLines ? 'calc(-0.19 * var(--book-height))' : 'calc(-0.15 * var(--book-height))'
             } as React.CSSProperties}
           >
             <div className="relative w-full h-full">
