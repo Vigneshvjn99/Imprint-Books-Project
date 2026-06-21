@@ -26,7 +26,18 @@ export function BookModal({ book, onClose }: BookModalProps) {
   const [cardOrder, setCardOrder] = useState<('book' | 'author' | 'who')[]>(['book', 'author', 'who']);
   const [swappingCard, setSwappingCard] = useState<'book' | 'author' | 'who' | null>(null);
 
-  const isLongTitle = book.title.length > 30;
+  // Prevent typographic orphans (single word wrapping to the second line)
+  const formattedTitle = (() => {
+    const words = book.title.trim().split(/\s+/);
+    if (words.length > 1) {
+      const lastWord = words.pop();
+      const secondToLast = words.pop();
+      return [...words, `${secondToLast}\u00a0${lastWord}`].join(' ');
+    }
+    return book.title;
+  })();
+
+  const isLongTitle = formattedTitle.length > 30;
   const titleClass = isLongTitle
     ? "text-[22px] md:text-[30px] lg:text-[38px] xl:text-[42px] 2xl:text-[48px] leading-[1.15]"
     : "text-[28px] md:text-[38px] lg:text-[48px] xl:text-[52px] 2xl:text-[62px] leading-[1.1]";
@@ -38,7 +49,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
 
   useEffect(() => {
     setIsTitleFinished(false);
-  }, [book.title]);
+  }, [formattedTitle]);
 
   useEffect(() => {
     if (!titleRef.current) return;
@@ -55,7 +66,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
 
     observer.observe(titleRef.current);
     return () => observer.disconnect();
-  }, [book.title]);
+  }, [formattedTitle]);
 
   // Prevent scrolling on the body while modal is open
   useEffect(() => {
@@ -357,7 +368,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
           <div ref={titleRef}>
             <TextType
               as="h2"
-              text={book.title}
+              text={formattedTitle}
               loop={false}
               typingSpeed={55}
               initialDelay={200}
