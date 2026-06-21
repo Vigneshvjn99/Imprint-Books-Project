@@ -30,7 +30,36 @@ export function BookModal({ book, onClose }: BookModalProps) {
     ? "text-[22px] md:text-[30px] lg:text-[38px] xl:text-[42px] 2xl:text-[48px] leading-[1.15]"
     : "text-[28px] md:text-[38px] lg:text-[48px] xl:text-[52px] 2xl:text-[62px] leading-[1.1]";
 
+  // Typewriter effect state
+  const [currentIndex, setCurrentIndex] = useState(0);
 
+  useEffect(() => {
+    setCurrentIndex(0);
+    let active = true;
+    let timer: any;
+    
+    // Small delay (200ms) to let the modal entrance finish before typing starts
+    const startDelay = setTimeout(() => {
+      const step = () => {
+        if (!active) return;
+        setCurrentIndex(prev => {
+          if (prev >= book.title.length) return prev;
+          timer = setTimeout(step, 22); // Elegant, snappy character speed
+          return prev + 1;
+        });
+      };
+      step();
+    }, 200);
+
+    return () => {
+      active = false;
+      clearTimeout(startDelay);
+      clearTimeout(timer);
+    };
+  }, [book.title]);
+
+  const displayedText = book.title.slice(0, currentIndex);
+  const remainingText = book.title.slice(currentIndex);
 
   // Prevent scrolling on the body while modal is open
   useEffect(() => {
@@ -330,11 +359,20 @@ export function BookModal({ book, onClose }: BookModalProps) {
         {/* Title and Author Group */}
         <div className="max-w-[500px]">
           <h2 className={`${titleClass} font-medium tracking-tight text-black dark:text-white font-sans break-words`}>
-            {book.title}
+            {displayedText}
+            <span className="opacity-0 select-none">{remainingText}</span>
           </h2>
-          <p className="text-[15px] md:text-[17px] lg:text-[19px] xl:text-[20px] 2xl:text-[22px] font-medium text-black/60 dark:text-white/60 mt-3 font-sans tracking-wide">
+          <motion.p 
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ 
+              opacity: currentIndex >= book.title.length ? 0.6 : 0, 
+              y: currentIndex >= book.title.length ? 0 : 4 
+            }}
+            transition={{ duration: 0.45, ease: [0.25, 1, 0.5, 1] }}
+            className="text-[15px] md:text-[17px] lg:text-[19px] xl:text-[20px] 2xl:text-[22px] font-medium text-black/60 dark:text-white/60 mt-3 font-sans tracking-wide"
+          >
             {book.author}
-          </p>
+          </motion.p>
         </div>
 
         {/* Bottom-aligned area for the book mockup — no overflow-hidden so book peeks below naturally */}
