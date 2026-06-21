@@ -4,6 +4,7 @@ import { X } from 'lucide-react';
 import type { Book } from './BookCard';
 import { BackgroundRippleEffect } from './ui/background-ripple-effect';
 import { DraggableCardBody, DraggableCardContainer } from './ui/draggable-card';
+import TextType from './ui/TextType';
 
 interface BookModalProps {
   book: Book;
@@ -30,36 +31,12 @@ export function BookModal({ book, onClose }: BookModalProps) {
     ? "text-[22px] md:text-[30px] lg:text-[38px] xl:text-[42px] 2xl:text-[48px] leading-[1.15]"
     : "text-[28px] md:text-[38px] lg:text-[48px] xl:text-[52px] 2xl:text-[62px] leading-[1.1]";
 
-  // Typewriter effect state
-  const [currentIndex, setCurrentIndex] = useState(0);
+  // Typewriter completion tracking
+  const [isTitleFinished, setIsTitleFinished] = useState(false);
 
   useEffect(() => {
-    setCurrentIndex(0);
-    let active = true;
-    let timer: any;
-    
-    // Small delay (200ms) to let the modal entrance finish before typing starts
-    const startDelay = setTimeout(() => {
-      const step = () => {
-        if (!active) return;
-        setCurrentIndex(prev => {
-          if (prev >= book.title.length) return prev;
-          timer = setTimeout(step, 22); // Elegant, snappy character speed
-          return prev + 1;
-        });
-      };
-      step();
-    }, 200);
-
-    return () => {
-      active = false;
-      clearTimeout(startDelay);
-      clearTimeout(timer);
-    };
+    setIsTitleFinished(false);
   }, [book.title]);
-
-  const displayedText = book.title.slice(0, currentIndex);
-  const remainingText = book.title.slice(currentIndex);
 
   // Prevent scrolling on the body while modal is open
   useEffect(() => {
@@ -358,15 +335,23 @@ export function BookModal({ book, onClose }: BookModalProps) {
       <div className="w-full md:w-[49%] h-1/2 md:h-full relative bg-transparent flex flex-col justify-between p-8 md:p-12 lg:p-16 xl:p-20 pointer-events-none z-20">
         {/* Title and Author Group */}
         <div className="max-w-[500px]">
-          <h2 className={`${titleClass} font-medium tracking-tight text-black dark:text-white font-sans break-words`}>
-            {displayedText}
-            <span className="opacity-0 select-none">{remainingText}</span>
-          </h2>
+          <TextType
+            as="h2"
+            text={book.title}
+            loop={false}
+            typingSpeed={18}
+            initialDelay={200}
+            showCursor={true}
+            cursorCharacter="|"
+            preserveLayout={true}
+            className={`${titleClass} font-medium tracking-tight text-black dark:text-white font-sans break-words`}
+            onSentenceComplete={() => setIsTitleFinished(true)}
+          />
           <motion.p 
             initial={{ opacity: 0, y: 4 }}
             animate={{ 
-              opacity: currentIndex >= book.title.length ? 0.6 : 0, 
-              y: currentIndex >= book.title.length ? 0 : 4 
+              opacity: isTitleFinished ? 0.6 : 0, 
+              y: isTitleFinished ? 0 : 4 
             }}
             transition={{ duration: 0.45, ease: [0.25, 1, 0.5, 1] }}
             className="text-[15px] md:text-[17px] lg:text-[19px] xl:text-[20px] 2xl:text-[22px] font-medium text-black/60 dark:text-white/60 mt-3 font-sans tracking-wide"
