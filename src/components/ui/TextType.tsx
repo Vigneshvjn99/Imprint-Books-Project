@@ -89,21 +89,28 @@ const TextType = ({
     return () => observer.disconnect();
   }, [startOnVisible]);
 
+  const isTyping = currentCharIndex > 0 && currentCharIndex < (textArray[currentTextIndex] || '').length && !isDeleting;
+
   useEffect(() => {
     if (showCursor && cursorRef.current) {
-      gsap.set(cursorRef.current, { opacity: 1 });
-      const anim = gsap.to(cursorRef.current, {
-        opacity: 0,
-        duration: cursorBlinkDuration,
-        repeat: -1,
-        yoyo: true,
-        ease: 'power2.inOut'
-      });
-      return () => {
-        anim.kill();
-      };
+      if (isTyping) {
+        gsap.killTweensOf(cursorRef.current);
+        gsap.set(cursorRef.current, { opacity: 1 });
+      } else {
+        gsap.set(cursorRef.current, { opacity: 1 });
+        const anim = gsap.to(cursorRef.current, {
+          opacity: 0,
+          duration: cursorBlinkDuration,
+          repeat: -1,
+          yoyo: true,
+          ease: 'power2.inOut'
+        });
+        return () => {
+          anim.kill();
+        };
+      }
     }
-  }, [showCursor, cursorBlinkDuration]);
+  }, [showCursor, cursorBlinkDuration, isTyping]);
 
   useEffect(() => {
     if (!isVisible) return;
@@ -198,14 +205,6 @@ const TextType = ({
       },
       displayedText
     ),
-    preserveLayout &&
-      createElement(
-        'span',
-        {
-          className: 'opacity-0 select-none pointer-events-none'
-        },
-        (textArray[currentTextIndex] || '').slice(displayedText.length)
-      ),
     showCursor &&
       createElement(
         'span',
@@ -214,6 +213,14 @@ const TextType = ({
           className: `text-type__cursor ${cursorClassName} ${shouldHideCursor ? 'text-type__cursor--hidden' : ''}`
         },
         cursorCharacter
+      ),
+    preserveLayout &&
+      createElement(
+        'span',
+        {
+          className: 'opacity-0 select-none pointer-events-none'
+        },
+        (textArray[currentTextIndex] || '').slice(displayedText.length)
       )
   );
 };

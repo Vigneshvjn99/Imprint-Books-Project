@@ -339,7 +339,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
             as="h2"
             text={book.title}
             loop={false}
-            typingSpeed={18}
+            typingSpeed={38}
             initialDelay={200}
             showCursor={true}
             cursorCharacter="|"
