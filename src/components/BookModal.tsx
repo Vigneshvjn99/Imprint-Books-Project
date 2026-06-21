@@ -306,34 +306,34 @@ export function BookModal({ book, onClose }: BookModalProps) {
       {/* Responsive layout constants injected */}
       <style>{`
         :root {
-          --book-height: ${isTwoLines ? '205px' : '245px'};
+          --book-height: ${isTwoLines ? '225px' : '245px'};
           --card-max-width: 320px;
           --card-height: 260px;
         }
         @media (min-width: 768px) {
           :root {
-            --book-height: ${isTwoLines ? '310px' : '370px'};
+            --book-height: ${isTwoLines ? '340px' : '370px'};
             --card-max-width: 400px;
             --card-height: 290px;
           }
         }
         @media (min-width: 1024px) {
           :root {
-            --book-height: ${isTwoLines ? '410px' : '485px'};
+            --book-height: ${isTwoLines ? '450px' : '485px'};
             --card-max-width: 450px;
             --card-height: 320px;
           }
         }
         @media (min-width: 1280px) {
           :root {
-            --book-height: ${isTwoLines ? '490px' : '580px'};
+            --book-height: ${isTwoLines ? '540px' : '580px'};
             --card-max-width: 480px;
             --card-height: 340px;
           }
         }
         @media (min-width: 1536px) {
           :root {
-            --book-height: ${isTwoLines ? '550px' : '650px'};
+            --book-height: ${isTwoLines ? '600px' : '650px'};
             --card-max-width: 480px;
             --card-height: 340px;
           }
