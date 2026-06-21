@@ -373,35 +373,46 @@ export function BookModal({ book, onClose }: BookModalProps) {
         }
         
         /* Height-based overrides for desktop/tablet to handle short screens (like Windows laptops) */
-        @media (min-width: 768px) and (max-height: 850px) {
+        @media (min-width: 768px) and (max-height: 950px) {
           :root {
-            --book-height: ${isTwoLines ? '380px' : '410px'};
-            --card-height: 280px;
+            --book-height: ${isTwoLines ? '410px' : '440px'};
+            --card-height: 300px;
             --card-icon-size: 42px;
-            --modal-padding-y: 2.5rem;
-            --title-font-size: ${isLongTitle ? '34px' : '42px'};
+            --modal-padding-y: 3.5rem;
+            --title-font-size: ${isLongTitle ? '36px' : '44px'};
             --title-leading: ${isLongTitle ? '1.15' : '1.1'};
             --mockup-padding-top: 1.5rem;
           }
         }
+        @media (min-width: 768px) and (max-height: 820px) {
+          :root {
+            --book-height: ${isTwoLines ? '340px' : '370px'};
+            --card-height: 260px;
+            --card-icon-size: 38px;
+            --modal-padding-y: 2.5rem;
+            --title-font-size: ${isLongTitle ? '30px' : '38px'};
+            --title-leading: ${isLongTitle ? '1.15' : '1.1'};
+            --mockup-padding-top: 1.25rem;
+          }
+        }
         @media (min-width: 768px) and (max-height: 720px) {
           :root {
-            --book-height: ${isTwoLines ? '300px' : '330px'};
-            --card-height: 240px;
-            --card-icon-size: 36px;
+            --book-height: ${isTwoLines ? '275px' : '300px'};
+            --card-height: 230px;
+            --card-icon-size: 34px;
             --modal-padding-y: 2rem;
-            --title-font-size: ${isLongTitle ? '28px' : '34px'};
+            --title-font-size: ${isLongTitle ? '26px' : '32px'};
             --title-leading: ${isLongTitle ? '1.15' : '1.1'};
             --mockup-padding-top: 1rem;
           }
         }
         @media (min-width: 768px) and (max-height: 620px) {
           :root {
-            --book-height: ${isTwoLines ? '230px' : '255px'};
-            --card-height: 200px;
+            --book-height: ${isTwoLines ? '210px' : '230px'};
+            --card-height: 190px;
             --card-icon-size: 30px;
             --modal-padding-y: 1.5rem;
-            --title-font-size: ${isLongTitle ? '22px' : '28px'};
+            --title-font-size: ${isLongTitle ? '20px' : '26px'};
             --title-leading: ${isLongTitle ? '1.15' : '1.1'};
             --mockup-padding-top: 0.75rem;
           }
@@ -471,10 +482,10 @@ export function BookModal({ book, onClose }: BookModalProps) {
             animate="animate"
             exit="exit"
             className="relative z-20 w-[calc(var(--book-height)*var(--book-aspect))] h-[var(--book-height)] shrink-0"
-            style={{ 
+            style={{
               perspective: '1200px',
               '--book-aspect': (book.width && book.height) ? (book.width / book.height) : (222 / 334),
-              marginBottom: isTwoLines ? 'calc(-0.19 * var(--book-height))' : 'calc(-0.15 * var(--book-height))'
+              marginBottom: isTwoLines ? 'calc(-0.03 * var(--book-height))' : 'calc(-0.02 * var(--book-height))'
             } as React.CSSProperties}
           >
             <div className="relative w-full h-full">
