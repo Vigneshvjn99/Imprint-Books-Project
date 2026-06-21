@@ -8,6 +8,28 @@ interface InfiniteCanvasProps {
   children: React.ReactNode;
 }
 
+// Rubber-band formula: allows slight overshoot past edges with resistance.
+// The further past the bound, the more resistance is applied.
+// coeff controls how elastic the stretch feels (0 = wall, 1 = no resistance)
+const rubberband = (pos: number, bound: number, coeff: number): number => {
+  // pos is already within bounds — no effect
+  if (coeff === 0) return pos;
+  const overshoot = pos - bound;
+  // Apple's rubber-band formula: overshoot reduces logarithmically
+  return bound + (overshoot * coeff) / (1 + Math.abs(overshoot) * 0.008);
+};
+
+const applyRubberband = (
+  pos: number,
+  min: number,
+  max: number,
+  coeff = 0.4
+): number => {
+  if (pos < min) return rubberband(pos, min, coeff);
+  if (pos > max) return rubberband(pos, max, coeff);
+  return pos;
+};
+
 export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -37,27 +59,57 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
     return { minX, maxX, minY, maxY };
   }, []);
 
-  // rAF-based inertia loop — decays velocity each frame until negligible
+  // rAF-based inertia loop with rubber-band edge resistance + spring-back
   const startInertia = useCallback(() => {
     if (rafId.current !== null) cancelAnimationFrame(rafId.current);
 
-    const FRICTION = 0.88; // lower = decelerates faster / feels snappier
-    const MIN_VEL = 0.5;   // stop threshold in px
+    const FRICTION = 0.88;       // velocity decay per frame
+    const OUT_FRICTION = 0.72;   // stronger friction when outside bounds (resist overshoot)
+    const MIN_VEL = 0.5;         // stop threshold in px
+    const SNAPBACK_VEL = 12;     // px/frame at which we switch to spring snap-back
 
     const loop = () => {
-      velX.current *= FRICTION;
-      velY.current *= FRICTION;
+      const { minX, maxX, minY, maxY } = getBounds();
+      const curX = x.get();
+      const curY = y.get();
 
+      const outOfBoundsX = curX < minX || curX > maxX;
+      const outOfBoundsY = curY < minY || curY > maxY;
+
+      // Apply stronger friction when outside bounds to kill overshoot quickly
+      velX.current *= outOfBoundsX ? OUT_FRICTION : FRICTION;
+      velY.current *= outOfBoundsY ? OUT_FRICTION : FRICTION;
+
+      // Velocity negligible — stop loop and snap back to bounds if needed
       if (Math.abs(velX.current) < MIN_VEL && Math.abs(velY.current) < MIN_VEL) {
         velX.current = 0;
         velY.current = 0;
         rafId.current = null;
+
+        // Spring-back: set the spring target to the clamped position.
+        // Framer-motion spring will animate smoothly back into bounds.
+        const snappedX = clamp(curX, minX, maxX);
+        const snappedY = clamp(curY, minY, maxY);
+        if (curX !== snappedX) x.set(snappedX);
+        if (curY !== snappedY) y.set(snappedY);
         return;
       }
 
-      const { minX, maxX, minY, maxY } = getBounds();
-      x.set(clamp(x.get() + velX.current, minX, maxX));
-      y.set(clamp(y.get() + velY.current, minY, maxY));
+      // If we have high velocity but are out of bounds, snap back faster
+      if (outOfBoundsX && Math.abs(velX.current) < SNAPBACK_VEL) {
+        x.set(clamp(curX, minX, maxX));
+      } else {
+        // Apply rubber-band resistance: move toward new pos but with stretchy feel
+        const nextX = curX + velX.current;
+        x.set(applyRubberband(nextX, minX, maxX));
+      }
+
+      if (outOfBoundsY && Math.abs(velY.current) < SNAPBACK_VEL) {
+        y.set(clamp(curY, minY, maxY));
+      } else {
+        const nextY = curY + velY.current;
+        y.set(applyRubberband(nextY, minY, maxY));
+      }
 
       rafId.current = requestAnimationFrame(loop);
     };
@@ -87,14 +139,12 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
       onWheel: ({ event, delta: [dx, dy] }) => {
         event.preventDefault();
 
-        // Normalize: trackpad sends small deltas (1-10px), mouse wheel sends large (100px+)
-        // Cap individual delta so mouse wheel doesn't feel hyper-sensitive
         const now = Date.now();
         const timeDelta = now - lastWheelTime.current;
         lastWheelTime.current = now;
 
-        // If events come very fast (< 50ms apart) it's a trackpad — boost it
-        // If events are slow/chunky (> 50ms apart) it's a mouse wheel — moderate boost
+        // Trackpad: fast events (< 50ms apart), boost scale
+        // Mouse wheel: slow/chunky events, moderate scale
         const isMouseWheel = timeDelta > 50;
         const scale = isMouseWheel ? 0.8 : 2.5;
 
@@ -102,12 +152,12 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
         velX.current -= dx * scale;
         velY.current -= dy * scale;
 
-        // Clamp max velocity — higher ceiling for fast swipes
+        // Cap max velocity
         const MAX_VEL = 200;
         velX.current = clamp(velX.current, -MAX_VEL, MAX_VEL);
         velY.current = clamp(velY.current, -MAX_VEL, MAX_VEL);
 
-        // Start/restart the inertia loop
+        // Kick off inertia loop
         startInertia();
       }
     },
