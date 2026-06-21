@@ -371,6 +371,18 @@ export function BookModal({ book, onClose }: BookModalProps) {
             --mockup-padding-top: 2rem;
           }
         }
+        @media (min-width: 1900px) {
+          :root {
+            --book-height: ${isTwoLines ? '500px' : '550px'};
+            --card-max-width: 440px;
+            --card-height: 310px;
+            --card-icon-size: 42px;
+            --modal-padding-y: 4rem;
+            --title-font-size: ${isLongTitle ? '38px' : '48px'};
+            --title-leading: ${isLongTitle ? '1.15' : '1.1'};
+            --mockup-padding-top: 1.5rem;
+          }
+        }
         
         /* Height-based overrides for desktop/tablet to handle short screens (like Windows laptops) */
         @media (min-width: 768px) and (max-height: 950px) {
