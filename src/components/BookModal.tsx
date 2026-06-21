@@ -22,6 +22,12 @@ export function BookModal({ book, onClose }: BookModalProps) {
   const [details, setDetails] = useState<BookDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Book cover flip state
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [dominantColor, setDominantColor] = useState<string>('#2a2a2a');
+  const [textColor, setTextColor] = useState<string>('#ffffff');
+  const hasFlippedOnce = useRef(false);
+
   // Card deck cycle state
   const [cardOrder, setCardOrder] = useState<('book' | 'author' | 'who')[]>(['book', 'author', 'who']);
   const [swappingCard, setSwappingCard] = useState<'book' | 'author' | 'who' | null>(null);
@@ -64,6 +70,41 @@ export function BookModal({ book, onClose }: BookModalProps) {
     observer.observe(titleRef.current);
     return () => observer.disconnect();
   }, [formattedTitle]);
+
+  // Extract dominant colour from book cover image using a hidden canvas
+  useEffect(() => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = book.image;
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        // Sample a small region for perf — 20×20 from the top-left quadrant
+        canvas.width = 20;
+        canvas.height = 20;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        ctx.drawImage(img, 0, 0, img.naturalWidth * 0.5, img.naturalHeight * 0.5, 0, 0, 20, 20);
+        const data = ctx.getImageData(0, 0, 20, 20).data;
+        let r = 0, g = 0, b = 0, count = 0;
+        for (let i = 0; i < data.length; i += 4) {
+          r += data[i]; g += data[i + 1]; b += data[i + 2]; count++;
+        }
+        r = Math.floor(r / count);
+        g = Math.floor(g / count);
+        b = Math.floor(b / count);
+        // Darken slightly so text is always readable
+        const darken = (v: number) => Math.max(0, Math.floor(v * 0.6));
+        const bgColor = `rgb(${darken(r)}, ${darken(g)}, ${darken(b)})`;
+        setDominantColor(bgColor);
+        // Pick white or dark text based on perceived brightness of darkened colour
+        const brightness = (darken(r) * 299 + darken(g) * 587 + darken(b) * 114) / 1000;
+        setTextColor(brightness > 128 ? '#1a1a1a' : '#ffffff');
+      } catch (_) {
+        // Cross-origin or canvas blocked — keep defaults
+      }
+    };
+  }, [book.image]);
 
   // Prevent scrolling on the body while modal is open
   useEffect(() => {
@@ -111,6 +152,37 @@ export function BookModal({ book, onClose }: BookModalProps) {
 
   const fallbackAmazonUrl = `https://www.amazon.in/s?k=${encodeURIComponent(`${book.title} ${book.author} book`)}`;
   const amazonUrl = details?.amazonUrl || fallbackAmazonUrl;
+
+  const playFlipSound = () => {
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = new AudioContext();
+      const duration = 0.18;
+      const bufferSize = ctx.sampleRate * duration;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.Q.setValueAtTime(4.0, ctx.currentTime);
+      filter.frequency.setValueAtTime(1600, ctx.currentTime);
+      filter.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + duration);
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+      source.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+      source.start(); source.stop(ctx.currentTime + duration);
+    } catch (_) {}
+  };
+
+  const handleCoverFlip = () => {
+    playFlipSound();
+    hasFlippedOnce.current = true;
+    setIsFlipped(f => !f);
+  };
 
   const playCardSwapSound = () => {
     try {
@@ -473,68 +545,130 @@ export function BookModal({ book, onClose }: BookModalProps) {
           </motion.p>
         </div>
 
-        {/* Bottom-aligned area for the book mockup — no overflow-hidden so book peeks below naturally */}
-        <div className="flex-1 flex items-end justify-center min-h-0 pb-0" style={{ paddingTop: 'var(--mockup-padding-top)' }}>
-          {/* 3D Mockup Container — offset 15% of the book height below the container bottom so it peeks out */}
-          <motion.div 
+        {/* Bottom-aligned area for the book mockup */}
+        <div className="flex-1 flex flex-col items-center justify-end min-h-0 pb-0 gap-3" style={{ paddingTop: 'var(--mockup-padding-top)' }}>
+
+          {/* 3D Mockup Container */}
+          <motion.div
             variants={{
               initial: { y: 180, opacity: 0 },
-              animate: { 
-                y: 0, 
-                opacity: 1,
-                transition: { type: "spring", stiffness: 100, damping: 18, delay: 0.1 }
-              },
-              exit: { 
-                y: 180, 
-                opacity: 0,
-                transition: { type: "tween", duration: 0.25, ease: "easeIn" }
-              }
+              animate: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 100, damping: 18, delay: 0.1 } },
+              exit:    { y: 180, opacity: 0, transition: { type: 'tween', duration: 0.25, ease: 'easeIn' } }
             }}
             initial="initial"
             animate="animate"
             exit="exit"
-            className="relative z-20 w-[calc(var(--book-height)*var(--book-aspect))] h-[var(--book-height)] shrink-0"
+            className="relative z-20 w-[calc(var(--book-height)*var(--book-aspect))] h-[var(--book-height)] shrink-0 cursor-pointer"
             style={{
-              perspective: '1200px',
+              perspective: '1400px',
               '--book-aspect': (book.width && book.height) ? (book.width / book.height) : (222 / 334),
               marginBottom: isTwoLines ? '20px' : '30px'
             } as React.CSSProperties}
+            onClick={handleCoverFlip}
+            title={isFlipped ? 'Click to flip back' : 'Click to flip'}
           >
-            <div className="relative w-full h-full">
-              {/* BACK COVER & PAGES */}
-              <div 
-                className="absolute inset-0 bg-stone-200 dark:bg-stone-800 rounded-[6px] shadow-[0px_10px_45px_rgba(0,0,0,0.15)]" 
-                style={{ transform: 'translateZ(-15px) translateX(2px)' }}
-              >
-                <div className="absolute inset-y-1 right-0 w-[3px] bg-stone-300 dark:bg-stone-700 rounded-r-sm" />
-                <div className="absolute inset-y-2 right-1 w-[3px] bg-stone-300 dark:bg-stone-700 rounded-r-sm" />
-                <div className="absolute inset-y-3 right-2 w-[3px] bg-stone-300 dark:bg-stone-700 rounded-r-sm" />
+            {/* Flip wrapper — preserve-3d so front and back faces stack in 3D space */}
+            <motion.div
+              className="relative w-full h-full"
+              animate={{ rotateY: isFlipped ? 180 : 0 }}
+              transition={{ type: 'spring', stiffness: 70, damping: 18, mass: 0.8 }}
+              style={{ transformStyle: 'preserve-3d' }}
+            >
+
+              {/* ── FRONT FACE ── */}
+              <div className="absolute inset-0" style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}>
+                {/* Page stack */}
+                <div
+                  className="absolute inset-0 bg-stone-200 dark:bg-stone-800 rounded-[6px] shadow-[0px_10px_45px_rgba(0,0,0,0.15)]"
+                  style={{ transform: 'translateZ(-15px) translateX(2px)' }}
+                >
+                  <div className="absolute inset-y-1 right-0 w-[3px] bg-stone-300 dark:bg-stone-700 rounded-r-sm" />
+                  <div className="absolute inset-y-2 right-1 w-[3px] bg-stone-300 dark:bg-stone-700 rounded-r-sm" />
+                  <div className="absolute inset-y-3 right-2 w-[3px] bg-stone-300 dark:bg-stone-700 rounded-r-sm" />
+                </div>
+
+                {/* Spine */}
+                <div
+                  className="absolute left-[9px] top-0 bottom-0 w-[12px] rounded-l-sm overflow-hidden z-0"
+                  style={{ transform: 'translateX(-100%) rotateY(90deg)', transformOrigin: 'right center' }}
+                >
+                  <img src={book.spine} alt="spine" className="absolute inset-0 w-full h-full object-cover pointer-events-none" />
+                </div>
+
+                {/* Front cover */}
+                <div className="absolute inset-0 rounded-[6px] overflow-hidden" style={{ boxShadow: '10px 15px 35px rgba(0,0,0,0.22)' }}>
+                  <img src={book.image} alt={book.title} className="absolute inset-0 w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-black/15 via-transparent to-white/15 pointer-events-none" />
+                  <div className="absolute left-0 inset-y-0 w-[5px] bg-gradient-to-r from-black/35 to-transparent pointer-events-none" />
+                </div>
               </div>
 
-              {/* BOOK SPINE */}
-              <div 
-                className="absolute left-[9px] top-0 bottom-0 w-[12px] origin-right rounded-l-sm overflow-hidden z-0" 
-                style={{ 
-                  transform: 'translateX(-100%) rotateY(90deg)',
-                  transformOrigin: 'right center'
-                }}
-              >
-                <img src={book.spine} alt="spine" className="absolute inset-0 w-full h-full object-cover pointer-events-none" />
-              </div>
-
-              {/* FRONT COVER (No layoutId for home-to-detail transition continuity) */}
+              {/* ── BACK FACE ── (rotated 180° so it shows when flipped) */}
               <div
                 className="absolute inset-0 rounded-[6px] overflow-hidden"
-                style={{ 
-                  boxShadow: '10px 15px 35px rgba(0,0,0,0.22)' 
+                style={{
+                  backfaceVisibility: 'hidden',
+                  WebkitBackfaceVisibility: 'hidden',
+                  transform: 'rotateY(180deg)',
+                  backgroundColor: dominantColor,
+                  boxShadow: '-10px 15px 35px rgba(0,0,0,0.28)'
                 }}
               >
-                <img src={book.image} alt={book.title} className="absolute inset-0 w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-tr from-black/15 via-transparent to-white/15 pointer-events-none" />
-                <div className="absolute left-0 inset-y-0 w-[5px] bg-gradient-to-r from-black/35 to-transparent pointer-events-none" />
+                {/* Subtle texture overlay */}
+                <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'url(/books/paper_texture.png)', backgroundSize: 'cover' }} />
+                {/* Soft vignette */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/25 pointer-events-none" />
+
+                {/* Author content */}
+                <div className="relative z-10 flex flex-col justify-between h-full p-[8%]" style={{ color: textColor }}>
+                  {/* Header */}
+                  <div>
+                    <p className="text-[9px] md:text-[10px] font-semibold tracking-[2px] font-sans uppercase opacity-60 mb-2">About the Author</p>
+                    <p className="text-[13px] md:text-[15px] lg:text-[17px] font-semibold font-sans leading-tight mb-3 opacity-90">{book.author}</p>
+                    <div className="w-8 h-[1.5px] rounded-full mb-3" style={{ backgroundColor: textColor, opacity: 0.3 }} />
+                  </div>
+
+                  {/* Author description */}
+                  <div className="flex-1 overflow-hidden">
+                    {isLoading ? (
+                      <div className="space-y-2">
+                        <div className="h-3 w-full rounded" style={{ backgroundColor: textColor, opacity: 0.1 }} />
+                        <div className="h-3 w-[85%] rounded" style={{ backgroundColor: textColor, opacity: 0.1 }} />
+                        <div className="h-3 w-[70%] rounded" style={{ backgroundColor: textColor, opacity: 0.1 }} />
+                      </div>
+                    ) : (
+                      <p
+                        className="text-[11px] md:text-[12px] lg:text-[14px] leading-[1.55] font-['Fraunces'] opacity-85"
+                        style={{ fontVariationSettings: '"SOFT" 0, "WONK" 1' }}
+                      >
+                        {details?.aboutAuthor}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Decorative ornament */}
+                  <div className="flex items-center justify-center pt-3 opacity-30">
+                    <div className="h-[1px] flex-1" style={{ backgroundColor: textColor }} />
+                    <span className="mx-2 text-[10px]">✦</span>
+                    <div className="h-[1px] flex-1" style={{ backgroundColor: textColor }} />
+                  </div>
+                </div>
               </div>
-            </div>
+
+            </motion.div>
           </motion.div>
+
+          {/* 'Tap to flip' hint — fades in after cover enters, disappears after first flip */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: hasFlippedOnce.current ? 0 : (isTitleFinished ? 0.45 : 0) }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="text-[11px] md:text-[12px] font-sans tracking-widest uppercase text-black/50 dark:text-white/40 select-none pointer-events-none"
+            style={{ marginBottom: isTwoLines ? '24px' : '34px' }}
+          >
+            Click to flip
+          </motion.p>
+
         </div>
       </div>
 
