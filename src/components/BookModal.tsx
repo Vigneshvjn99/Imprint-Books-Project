@@ -375,8 +375,8 @@ export function BookModal({ book, onClose }: BookModalProps) {
         /* Height-based overrides for desktop/tablet to handle short screens (like Windows laptops) */
         @media (min-width: 768px) and (max-height: 950px) {
           :root {
-            --book-height: ${isTwoLines ? '490px' : '520px'};
-            --card-height: 300px;
+            --book-height: ${isTwoLines ? '540px' : '580px'};
+            --card-height: 340px;
             --card-icon-size: 42px;
             --modal-padding-y: 3.5rem;
             --title-font-size: ${isLongTitle ? '36px' : '44px'};
@@ -386,8 +386,8 @@ export function BookModal({ book, onClose }: BookModalProps) {
         }
         @media (min-width: 768px) and (max-height: 820px) {
           :root {
-            --book-height: ${isTwoLines ? '420px' : '450px'};
-            --card-height: 260px;
+            --book-height: ${isTwoLines ? '460px' : '500px'};
+            --card-height: 300px;
             --card-icon-size: 38px;
             --modal-padding-y: 2.5rem;
             --title-font-size: ${isLongTitle ? '30px' : '38px'};
@@ -397,8 +397,8 @@ export function BookModal({ book, onClose }: BookModalProps) {
         }
         @media (min-width: 768px) and (max-height: 720px) {
           :root {
-            --book-height: ${isTwoLines ? '335px' : '360px'};
-            --card-height: 230px;
+            --book-height: ${isTwoLines ? '380px' : '410px'};
+            --card-height: 260px;
             --card-icon-size: 34px;
             --modal-padding-y: 2rem;
             --title-font-size: ${isLongTitle ? '26px' : '32px'};
@@ -408,8 +408,8 @@ export function BookModal({ book, onClose }: BookModalProps) {
         }
         @media (min-width: 768px) and (max-height: 620px) {
           :root {
-            --book-height: ${isTwoLines ? '250px' : '270px'};
-            --card-height: 190px;
+            --book-height: ${isTwoLines ? '280px' : '300px'};
+            --card-height: 220px;
             --card-icon-size: 30px;
             --modal-padding-y: 1.5rem;
             --title-font-size: ${isLongTitle ? '20px' : '26px'};
@@ -543,7 +543,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
                 draggable={false}
                 animate={getCardStyles(cardKey as 'book' | 'author' | 'who')}
                 onClick={() => cycleCard(cardKey as 'book' | 'author' | 'who')}
-                className={`absolute flex flex-col justify-start gap-[10px] md:gap-[14px] h-[var(--card-height)] ${config.bg} ${
+                className={`absolute flex flex-col justify-start gap-[10px] md:gap-[14px] ${config.bg} ${
                   isTopCard ? 'pointer-events-auto cursor-pointer' : 'pointer-events-none'
                 }`}
                 style={{ 
