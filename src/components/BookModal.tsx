@@ -38,9 +38,6 @@ export function BookModal({ book, onClose }: BookModalProps) {
   })();
 
   const isLongTitle = formattedTitle.length > 30;
-  const titleClass = isLongTitle
-    ? "text-[22px] md:text-[30px] lg:text-[38px] xl:text-[42px] 2xl:text-[48px] leading-[1.15]"
-    : "text-[28px] md:text-[38px] lg:text-[48px] xl:text-[52px] 2xl:text-[62px] leading-[1.1]";
 
   // Typewriter completion tracking
   const [isTitleFinished, setIsTitleFinished] = useState(false);
@@ -320,12 +317,22 @@ export function BookModal({ book, onClose }: BookModalProps) {
           --book-height: ${isTwoLines ? '225px' : '245px'};
           --card-max-width: 320px;
           --card-height: 260px;
+          --card-icon-size: 36px;
+          --modal-padding-y: 2rem;
+          --title-font-size: ${isLongTitle ? '22px' : '28px'};
+          --title-leading: ${isLongTitle ? '1.15' : '1.1'};
+          --mockup-padding-top: 1rem;
         }
         @media (min-width: 768px) {
           :root {
             --book-height: ${isTwoLines ? '340px' : '370px'};
             --card-max-width: 400px;
             --card-height: 290px;
+            --card-icon-size: 42px;
+            --modal-padding-y: 3rem;
+            --title-font-size: ${isLongTitle ? '30px' : '38px'};
+            --title-leading: ${isLongTitle ? '1.15' : '1.1'};
+            --mockup-padding-top: 1.5rem;
           }
         }
         @media (min-width: 1024px) {
@@ -333,6 +340,11 @@ export function BookModal({ book, onClose }: BookModalProps) {
             --book-height: ${isTwoLines ? '450px' : '485px'};
             --card-max-width: 450px;
             --card-height: 320px;
+            --card-icon-size: 46px;
+            --modal-padding-y: 4rem;
+            --title-font-size: ${isLongTitle ? '38px' : '48px'};
+            --title-leading: ${isLongTitle ? '1.15' : '1.1'};
+            --mockup-padding-top: 2rem;
           }
         }
         @media (min-width: 1280px) {
@@ -340,6 +352,11 @@ export function BookModal({ book, onClose }: BookModalProps) {
             --book-height: ${isTwoLines ? '540px' : '580px'};
             --card-max-width: 480px;
             --card-height: 340px;
+            --card-icon-size: 46px;
+            --modal-padding-y: 5rem;
+            --title-font-size: ${isLongTitle ? '42px' : '52px'};
+            --title-leading: ${isLongTitle ? '1.15' : '1.1'};
+            --mockup-padding-top: 2rem;
           }
         }
         @media (min-width: 1536px) {
@@ -347,6 +364,46 @@ export function BookModal({ book, onClose }: BookModalProps) {
             --book-height: ${isTwoLines ? '600px' : '650px'};
             --card-max-width: 480px;
             --card-height: 340px;
+            --card-icon-size: 46px;
+            --modal-padding-y: 5rem;
+            --title-font-size: ${isLongTitle ? '48px' : '62px'};
+            --title-leading: ${isLongTitle ? '1.15' : '1.1'};
+            --mockup-padding-top: 2rem;
+          }
+        }
+        
+        /* Height-based overrides for desktop/tablet to handle short screens (like Windows laptops) */
+        @media (min-width: 768px) and (max-height: 850px) {
+          :root {
+            --book-height: ${isTwoLines ? '380px' : '410px'};
+            --card-height: 280px;
+            --card-icon-size: 42px;
+            --modal-padding-y: 2.5rem;
+            --title-font-size: ${isLongTitle ? '34px' : '42px'};
+            --title-leading: ${isLongTitle ? '1.15' : '1.1'};
+            --mockup-padding-top: 1.5rem;
+          }
+        }
+        @media (min-width: 768px) and (max-height: 720px) {
+          :root {
+            --book-height: ${isTwoLines ? '300px' : '330px'};
+            --card-height: 240px;
+            --card-icon-size: 36px;
+            --modal-padding-y: 2rem;
+            --title-font-size: ${isLongTitle ? '28px' : '34px'};
+            --title-leading: ${isLongTitle ? '1.15' : '1.1'};
+            --mockup-padding-top: 1rem;
+          }
+        }
+        @media (min-width: 768px) and (max-height: 620px) {
+          :root {
+            --book-height: ${isTwoLines ? '230px' : '255px'};
+            --card-height: 200px;
+            --card-icon-size: 30px;
+            --modal-padding-y: 1.5rem;
+            --title-font-size: ${isLongTitle ? '22px' : '28px'};
+            --title-leading: ${isLongTitle ? '1.15' : '1.1'};
+            --mockup-padding-top: 0.75rem;
           }
         }
       `}</style>
@@ -362,7 +419,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
       </button>
 
       {/* LEFT SECTION: Title, Author & Bottom-aligned 3D Mockup */}
-      <div className="w-full md:w-[49%] h-1/2 md:h-full relative bg-transparent flex flex-col justify-between p-8 md:p-12 lg:p-16 xl:p-20 pointer-events-none z-20">
+      <div className="w-full md:w-[49%] h-1/2 md:h-full relative bg-transparent flex flex-col justify-between px-8 md:px-12 lg:px-16 xl:px-20 py-[var(--modal-padding-y)] pointer-events-none z-20">
         {/* Title and Author Group */}
         <div className="max-w-[600px]">
           <div ref={titleRef}>
@@ -375,7 +432,8 @@ export function BookModal({ book, onClose }: BookModalProps) {
               showCursor={!isTitleFinished}
               cursorCharacter="|"
               preserveLayout={true}
-              className={`${titleClass} font-semibold tracking-tight text-black dark:text-white font-sans break-words`}
+              className="font-semibold tracking-tight text-black dark:text-white font-sans break-words"
+              style={{ fontSize: 'var(--title-font-size)', lineHeight: 'var(--title-leading)' }}
               onSentenceComplete={() => setIsTitleFinished(true)}
             />
           </div>
@@ -393,7 +451,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
         </div>
 
         {/* Bottom-aligned area for the book mockup — no overflow-hidden so book peeks below naturally */}
-        <div className="flex-1 flex items-end justify-center min-h-0 pt-8 pb-0">
+        <div className="flex-1 flex items-end justify-center min-h-0 pb-0" style={{ paddingTop: 'var(--mockup-padding-top)' }}>
           {/* 3D Mockup Container — offset 15% of the book height below the container bottom so it peeks out */}
           <motion.div 
             variants={{
@@ -458,7 +516,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
       </div>
 
       {/* RIGHT SECTION: Interactive stacked cards & Grab button */}
-      <div className="w-full md:w-[51%] h-1/2 md:h-full relative bg-transparent flex flex-col items-center justify-center p-8 md:p-16 lg:p-24 overflow-hidden pointer-events-none z-20">
+      <div className="w-full md:w-[51%] h-1/2 md:h-full relative bg-transparent flex flex-col items-center justify-center px-8 md:px-16 lg:px-24 py-[var(--modal-padding-y)] overflow-hidden pointer-events-none z-20">
 
         {/* 3D Stacked Cards Container */}
         {/* Draggable Cards Container */}
@@ -474,7 +532,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
                 draggable={false}
                 animate={getCardStyles(cardKey as 'book' | 'author' | 'who')}
                 onClick={() => cycleCard(cardKey as 'book' | 'author' | 'who')}
-                className={`absolute flex flex-col justify-start gap-[10px] md:gap-[14px] ${config.bg} ${
+                className={`absolute flex flex-col justify-start gap-[10px] md:gap-[14px] h-[var(--card-height)] ${config.bg} ${
                   isTopCard ? 'pointer-events-auto cursor-pointer' : 'pointer-events-none'
                 }`}
                 style={{ 
@@ -493,7 +551,8 @@ export function BookModal({ book, onClose }: BookModalProps) {
                 <img 
                   src={config.iconSrc} 
                   alt="" 
-                  className={`size-[36px] md:size-[42px] lg:size-[46px] shrink-0 object-contain aspect-square mt-3 md:mt-4 ${config.iconClass}`}
+                  className={`shrink-0 object-contain aspect-square mt-2 md:mt-3 ${config.iconClass}`}
+                  style={{ width: 'var(--card-icon-size)', height: 'var(--card-icon-size)' }}
                 />
 
                 {/* Description text */}
