@@ -344,7 +344,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
             showCursor={!isTitleFinished}
             cursorCharacter="|"
             preserveLayout={true}
-            className={`${titleClass} font-medium tracking-tight text-black dark:text-white font-sans break-words`}
+            className={`${titleClass} font-semibold tracking-tight text-black dark:text-white font-sans break-words`}
             onSentenceComplete={() => setIsTitleFinished(true)}
           />
           <motion.p 
