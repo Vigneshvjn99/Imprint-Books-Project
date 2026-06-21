@@ -41,23 +41,21 @@ export function BookModal({ book, onClose }: BookModalProps) {
   }, [book.title]);
 
   useEffect(() => {
-    const measureTitle = () => {
-      if (titleRef.current) {
-        const height = titleRef.current.clientHeight;
-        const fontSize = parseFloat(window.getComputedStyle(titleRef.current).fontSize);
-        // If title height is more than 1.35x font size, it is wrapped onto 2 or more lines
-        setIsTwoLines(height > fontSize * 1.35);
+    if (!titleRef.current) return;
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const height = entry.contentRect.height;
+        const fontSize = parseFloat(window.getComputedStyle(entry.target).fontSize);
+        // Math check: 1 line is ~1.15x fontSize, 2 lines is ~2.3x. 
+        // 1.45x is a very safe threshold to prevent false positives.
+        setIsTwoLines(height > fontSize * 1.45);
       }
-    };
+    });
 
-    const timer = setTimeout(measureTitle, 60);
-
-    window.addEventListener('resize', measureTitle);
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener('resize', measureTitle);
-    };
-  }, [book.title, isTitleFinished]);
+    observer.observe(titleRef.current);
+    return () => observer.disconnect();
+  }, [book.title]);
 
   // Prevent scrolling on the body while modal is open
   useEffect(() => {
