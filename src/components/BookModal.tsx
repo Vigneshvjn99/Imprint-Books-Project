@@ -485,7 +485,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
             style={{
               perspective: '1200px',
               '--book-aspect': (book.width && book.height) ? (book.width / book.height) : (222 / 334),
-              marginBottom: isTwoLines ? 'calc(-0.03 * var(--book-height))' : 'calc(-0.02 * var(--book-height))'
+              marginBottom: isTwoLines ? '20px' : '30px'
             } as React.CSSProperties}
           >
             <div className="relative w-full h-full">
