@@ -314,7 +314,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
       {/* Responsive layout constants injected */}
       <style>{`
         :root {
-          --book-height: ${isTwoLines ? '240px' : '260px'};
+          --book-height: ${isTwoLines ? '265px' : '290px'};
           --card-max-width: 320px;
           --card-height: 260px;
           --card-icon-size: 36px;
@@ -325,7 +325,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
         }
         @media (min-width: 768px) {
           :root {
-            --book-height: ${isTwoLines ? '360px' : '390px'};
+            --book-height: ${isTwoLines ? '390px' : '430px'};
             --card-max-width: 400px;
             --card-height: 290px;
             --card-icon-size: 42px;
@@ -337,7 +337,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
         }
         @media (min-width: 1024px) {
           :root {
-            --book-height: ${isTwoLines ? '475px' : '510px'};
+            --book-height: ${isTwoLines ? '520px' : '560px'};
             --card-max-width: 450px;
             --card-height: 320px;
             --card-icon-size: 46px;
@@ -349,7 +349,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
         }
         @media (min-width: 1280px) {
           :root {
-            --book-height: ${isTwoLines ? '570px' : '610px'};
+            --book-height: ${isTwoLines ? '620px' : '660px'};
             --card-max-width: 480px;
             --card-height: 340px;
             --card-icon-size: 46px;
@@ -361,7 +361,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
         }
         @media (min-width: 1536px) {
           :root {
-            --book-height: ${isTwoLines ? '630px' : '680px'};
+            --book-height: ${isTwoLines ? '680px' : '740px'};
             --card-max-width: 480px;
             --card-height: 340px;
             --card-icon-size: 46px;
@@ -375,7 +375,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
         /* Height-based overrides for desktop/tablet to handle short screens (like Windows laptops) */
         @media (min-width: 768px) and (max-height: 950px) {
           :root {
-            --book-height: ${isTwoLines ? '450px' : '480px'};
+            --book-height: ${isTwoLines ? '490px' : '520px'};
             --card-height: 300px;
             --card-icon-size: 42px;
             --modal-padding-y: 3.5rem;
@@ -386,7 +386,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
         }
         @media (min-width: 768px) and (max-height: 820px) {
           :root {
-            --book-height: ${isTwoLines ? '380px' : '410px'};
+            --book-height: ${isTwoLines ? '420px' : '450px'};
             --card-height: 260px;
             --card-icon-size: 38px;
             --modal-padding-y: 2.5rem;
@@ -397,7 +397,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
         }
         @media (min-width: 768px) and (max-height: 720px) {
           :root {
-            --book-height: ${isTwoLines ? '305px' : '330px'};
+            --book-height: ${isTwoLines ? '335px' : '360px'};
             --card-height: 230px;
             --card-icon-size: 34px;
             --modal-padding-y: 2rem;
@@ -408,7 +408,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
         }
         @media (min-width: 768px) and (max-height: 620px) {
           :root {
-            --book-height: ${isTwoLines ? '230px' : '250px'};
+            --book-height: ${isTwoLines ? '250px' : '270px'};
             --card-height: 190px;
             --card-icon-size: 30px;
             --modal-padding-y: 1.5rem;
