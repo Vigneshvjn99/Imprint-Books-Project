@@ -1,5 +1,8 @@
 <svg viewBox="0 0 218 290" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M0 240.963V26.5281L39.9834 0L218 48.6348V276L178.811 290L0 240.963Z" fill="#1a1a1a" />
-  <path d="M55.9288 24L30 40.1983L169.94 78L193 61.0421L55.9288 24Z" fill="#ffffff" />
-  <path d="M198.666 107.434L170.249 92.0752L170.249 257.072L198.666 266.066L198.666 107.434Z" fill="#ffffff" />
+  <mask id="book-mask">
+    <rect width="218" height="290" fill="white" />
+    <path d="M55.9288 24L30 40.1983L169.94 78L193 61.0421L55.9288 24Z" fill="black" />
+    <path d="M198.666 107.434L170.249 92.0752L170.249 257.072L198.666 266.066L198.666 107.434Z" fill="black" />
+  </mask>
+  <path d="M0 240.963V26.5281L39.9834 0L218 48.6348V276L178.811 290L0 240.963Z" fill="#ffffff" mask="url(#book-mask)" />
 </svg>
