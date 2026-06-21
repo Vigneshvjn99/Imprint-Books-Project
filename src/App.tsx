@@ -5,6 +5,7 @@ import type { Book } from './components/BookCard';
 import { BookModal } from './components/BookModal';
 import { Search, ChevronUp, Sun, Moon } from 'lucide-react';
 import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
+import { Logo } from './components/ui/Logo';
 
 function generateBooks(): Book[] {
   const baseBooks = [
@@ -156,6 +157,13 @@ function App() {
       {/* Sleek Floating Navigation (Framer Motion) */}
       <div className="fixed bottom-[30px] left-1/2 -translate-x-1/2 flex items-center gap-1.5 p-1.5 rounded-full bg-white/70 dark:bg-black/70 backdrop-blur-xl border border-black/5 dark:border-white/10 shadow-2xl z-50">
         
+        {/* Brand Logo */}
+        <div className="pl-3.5 pr-2.5 flex items-center shrink-0">
+          <Logo className="h-5 w-auto" />
+        </div>
+
+        <div className="w-[1px] h-6 bg-black/10 dark:bg-white/10 mx-0.5 shrink-0" />
+
         {/* Theme Toggle Group */}
         <div className="flex items-center gap-0.5">
           <button 
