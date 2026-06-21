@@ -341,7 +341,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
             loop={false}
             typingSpeed={38}
             initialDelay={200}
-            showCursor={true}
+            showCursor={!isTitleFinished}
             cursorCharacter="|"
             preserveLayout={true}
             className={`${titleClass} font-medium tracking-tight text-black dark:text-white font-sans break-words`}
