@@ -514,9 +514,9 @@ export function BookModal({ book, onClose }: BookModalProps) {
       </button>
 
       {/* LEFT SECTION: Title, Author & Bottom-aligned 3D Mockup */}
-      <div className="w-full md:w-[49%] h-1/2 md:h-full relative bg-transparent flex flex-col justify-between px-8 md:px-12 lg:px-16 xl:px-20 py-[var(--modal-padding-y)] pointer-events-none z-20">
-        {/* Title and Author Group */}
-        <div className="max-w-[600px]">
+      <div className="w-full md:w-[49%] h-1/2 md:h-full relative bg-transparent flex flex-col justify-between px-8 md:px-12 lg:px-16 xl:px-20 py-[var(--modal-padding-y)] pointer-events-auto z-20">
+        {/* Title and Author Group — non-interactive */}
+        <div className="max-w-[600px] pointer-events-none">
           <div ref={titleRef}>
             <TextType
               as="h2"
@@ -558,7 +558,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
             initial="initial"
             animate="animate"
             exit="exit"
-            className="relative z-20 w-[calc(var(--book-height)*var(--book-aspect))] h-[var(--book-height)] shrink-0 cursor-pointer"
+            className="relative z-20 w-[calc(var(--book-height)*var(--book-aspect))] h-[var(--book-height)] shrink-0 cursor-pointer pointer-events-auto"
             style={{
               perspective: '1400px',
               '--book-aspect': (book.width && book.height) ? (book.width / book.height) : (222 / 334),
