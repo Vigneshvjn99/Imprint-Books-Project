@@ -567,12 +567,16 @@ export function BookModal({ book, onClose }: BookModalProps) {
             onClick={handleCoverFlip}
             title={isFlipped ? 'Click to flip back' : 'Click to flip'}
           >
-            {/* Flip wrapper — preserve-3d so front and back faces stack in 3D space */}
-            <motion.div
+            {/* Flip wrapper — pure CSS transition, NOT Framer Motion animate.
+                Framer Motion serialises rotateY as matrix3d which silently
+                flattens preserve-3d and breaks backfaceVisibility. */}
+            <div
               className="relative w-full h-full"
-              animate={{ rotateY: isFlipped ? 180 : 0 }}
-              transition={{ type: 'spring', stiffness: 70, damping: 18, mass: 0.8 }}
-              style={{ transformStyle: 'preserve-3d' }}
+              style={{
+                transformStyle: 'preserve-3d',
+                transition: 'transform 0.65s cubic-bezier(0.4, 0.2, 0.2, 1)',
+                transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+              }}
             >
 
               {/* ── FRONT FACE ── */}
@@ -655,7 +659,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
                 </div>
               </div>
 
-            </motion.div>
+            </div>
           </motion.div>
 
           {/* 'Tap to flip' hint — fades in after cover enters, disappears after first flip */}
