@@ -8,6 +8,7 @@ export interface Book {
   author: string;
   image: string;
   spine: string;
+  backCover?: string;
   category: string;
   width?: number;
   height?: number;

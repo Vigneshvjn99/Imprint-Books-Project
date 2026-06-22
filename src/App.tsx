@@ -9,10 +9,10 @@ import { Logo } from './components/ui/Logo';
 
 function generateBooks(): Book[] {
   const baseBooks = [
-    { title: 'Grid Systems', author: 'Josef Müller-Brockmann', image: '/books/book_0.png', category: 'Graphic Design' },
-    { title: 'Palette Perfect', author: 'Sara Caldas', image: '/books/book_1.png', category: 'Graphic Design' },
-    { title: 'Expressive Type Today', author: 'Counter-Print Books', image: '/books/book_2.png', category: 'Graphic Design' },
-    { title: 'Strategic Creativity', author: 'Robin Landa', image: '/books/book_3.png', category: 'Graphic Design' },
+    { title: 'Grid Systems', author: 'Josef Müller-Brockmann', image: '/books/book_0.png', backCover: '/books/back_book_0.png', category: 'Graphic Design' },
+    { title: 'Palette Perfect', author: 'Sara Caldas', image: '/books/book_1.png', backCover: '/books/back_book_1.png', category: 'Graphic Design' },
+    { title: 'Expressive Type Today', author: 'Counter-Print Books', image: '/books/book_2.png', backCover: '/books/back_book_2.png', category: 'Graphic Design' },
+    { title: 'Strategic Creativity', author: 'Robin Landa', image: '/books/book_3.png', backCover: '/books/back_book_3.png', category: 'Graphic Design' },
     { title: 'Logo Modernism', author: 'Jens Müller', image: '/books/book_4.png', category: 'Graphic Design' },
     { title: 'Sprint', author: 'Jake Knapp', image: '/books/book_5.png', category: 'Product Design' },
     { title: 'The Graphic Design Idea Book', author: 'Steven Heller', image: '/books/book_6.png', category: 'Graphic Design' },
@@ -20,9 +20,9 @@ function generateBooks(): Book[] {
     { title: 'Design as Art', author: 'Bruno Munari', image: '/books/book_8.png', category: 'Graphic Design' },
     { title: 'NASA Graphics Standards Manual', author: 'Richard Danne', image: '/books/book_9.png', category: 'Graphic Design' },
     { title: 'The Design of Everyday Things', author: 'Don Norman', image: '/books/book_10.png', category: 'Product Design' },
-    { title: 'White Space is Not Your Enemy', author: 'Kim Golombisky', image: '/books/book_11.png', category: 'Graphic Design' },
-    { title: 'Graphic Design 1890-Today', author: 'Jens Müller, Julius Wiedemann', image: '/books/book_12.png', category: 'Graphic Design' },
-    { title: 'The User Experience Team of One', author: 'Leah Buley', image: '/books/book_13.png', category: 'Product Design' },
+    { title: 'White Space is Not Your Enemy', author: 'Kim Golombisky', image: '/books/book_11.png', backCover: '/books/back_book_11.png', category: 'Graphic Design' },
+    { title: 'Graphic Design 1890-Today', author: 'Jens Müller, Julius Wiedemann', image: '/books/book_12.png', backCover: '/books/back_book_12.png', category: 'Graphic Design' },
+    { title: 'The User Experience Team of One', author: 'Leah Buley', image: '/books/book_13.png', backCover: '/books/back_book_13.png', category: 'Product Design' },
     { title: 'Articulating Design Decisions', author: 'Tom Greever', image: '/books/book_14.png', category: 'Product Design' },
     { title: 'Mismatch', author: 'Kat Holmes', image: '/books/book_15.png', category: 'Product Design' },
     { title: 'User Friendly', author: 'Cliff Kuang', image: '/books/book_16.png', category: 'Product Design' },
@@ -30,16 +30,17 @@ function generateBooks(): Book[] {
     { title: 'Creative Confidence', author: 'Tom Kelley & David Kelley', image: '/books/book_18.png', category: 'Product Design', width: 222, height: 334 },
     { title: '100 Things Every Designer Needs to Know', author: 'Susan M. Weinschenk', image: '/books/book_19.png', category: 'Product Design', width: 250, height: 320 },
     { title: 'Steal Like an Artist', author: 'Austin Kleon', image: '/books/book_20.png', category: 'Product Design', width: 240, height: 240 },
-    { title: 'Laws of UX', author: 'Jon Yablonski', image: '/books/book_21.png', category: 'Product Design', width: 222, height: 334 },
-    { title: 'Interaction of Color', author: 'Josef Albers', image: '/books/book_22.png', category: 'Graphic Design', width: 218, height: 334 },
-    { title: 'Thinking with Type', author: 'Ellen Lupton', image: '/books/book_23.png', category: 'Graphic Design', width: 275, height: 334 },
-    { title: 'Geometry of Design', author: 'Kimberly Elam', image: '/books/book_24.png', category: 'Graphic Design', width: 277, height: 334 },
-    { title: 'Designing Brand Identity', author: 'Alina Wheeler, Rob Meyerson', image: '/books/book_25.png', category: 'Graphic Design', width: 263, height: 334 },
+    { title: 'Laws of UX', author: 'Jon Yablonski', image: '/books/book_21.png', backCover: '/books/back_book_21.png', category: 'Product Design', width: 222, height: 334 },
+    { title: 'Interaction of Color', author: 'Josef Albers', image: '/books/book_22.png', backCover: '/books/back_book_22.png', category: 'Graphic Design', width: 218, height: 334 },
+    { title: 'Thinking with Type', author: 'Ellen Lupton', image: '/books/book_23.png', backCover: '/books/back_book_23.png', category: 'Graphic Design', width: 275, height: 334 },
+    { title: 'Geometry of Design', author: 'Kimberly Elam', image: '/books/book_24.png', backCover: '/books/back_book_24.png', category: 'Graphic Design', width: 277, height: 334 },
+    { title: 'Designing Brand Identity', author: 'Alina Wheeler, Rob Meyerson', image: '/books/book_25.png', backCover: '/books/back_book_25.png', category: 'Graphic Design', width: 263, height: 334 },
     { title: 'How to Solve It', author: 'George Polya', image: '/books/book_26.png', category: 'Graphic Design', width: 218, height: 334 },
     { title: 'Visual Grammar', author: 'Christian Leborg', image: '/books/book_27.png', category: 'Graphic Design', width: 275, height: 334 },
     { title: 'Just My Type', author: 'Simon Garfield', image: '/books/book_28.png', category: 'Graphic Design', width: 217, height: 334 },
     { title: 'Graphic Design Manual', author: 'Armin Hofmann', image: '/books/book_29.png', category: 'Graphic Design', width: 286, height: 334 }
   ];
+
   
   const spine = "/books/spine.png";
 

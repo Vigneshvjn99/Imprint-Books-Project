@@ -625,7 +625,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
                 </div>
               </div>
 
-              {/* ── BACK FACE ── flat solid dominant colour, no overlays */}
+              {/* ── BACK FACE ── book texture image if available, solid colour fallback */}
               <div
                 className="absolute inset-0 rounded-[6px] overflow-hidden"
                 style={{
@@ -636,6 +636,15 @@ export function BookModal({ book, onClose }: BookModalProps) {
                   boxShadow: '-10px 15px 35px rgba(0,0,0,0.28)'
                 }}
               >
+                {/* Full-bleed background texture from AI-generated back cover */}
+                {book.backCover && (
+                  <img
+                    src={book.backCover}
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                  />
+                )}
+
 
                 {/* Author content */}
                 <div className="relative z-10 flex flex-col justify-between h-full p-[8%]" style={{ color: textColor }}>
