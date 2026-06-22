@@ -546,7 +546,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
         </div>
 
         {/* Bottom-aligned area for the book mockup */}
-        <div className="flex-1 flex flex-col items-center justify-end min-h-0 pb-0 gap-3" style={{ paddingTop: 'var(--mockup-padding-top)' }}>
+        <div className="flex-1 flex items-end justify-center min-h-0 pb-0" style={{ paddingTop: 'var(--mockup-padding-top)' }}>
 
           {/* 3D Mockup Container */}
           <motion.div
@@ -661,17 +661,6 @@ export function BookModal({ book, onClose }: BookModalProps) {
 
             </div>
           </motion.div>
-
-          {/* 'Tap to flip' hint — fades in after cover enters, disappears after first flip */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: hasFlippedOnce.current ? 0 : (isTitleFinished ? 0.45 : 0) }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="text-[11px] md:text-[12px] font-sans tracking-widest uppercase text-black/50 dark:text-white/40 select-none pointer-events-none"
-            style={{ marginBottom: isTwoLines ? '24px' : '34px' }}
-          >
-            Click to flip
-          </motion.p>
 
         </div>
       </div>
