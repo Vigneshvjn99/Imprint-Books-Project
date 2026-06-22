@@ -587,7 +587,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
               <div className="absolute inset-0" style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}>
                 {/* Page stack */}
                 <div
-                  className="absolute inset-0 bg-stone-200 dark:bg-stone-800 rounded-[6px] shadow-[0px_10px_45px_rgba(0,0,0,0.15)]"
+                  className="absolute inset-0 bg-stone-200 dark:bg-stone-800 rounded-[6px] shadow-[0px_6px_30px_rgba(0,0,0,0.10)]"
                   style={{ transform: 'translateZ(-15px) translateX(2px)' }}
                 >
                   <div className="absolute inset-y-1 right-0 w-[3px] bg-stone-300 dark:bg-stone-700 rounded-r-sm" />
@@ -604,7 +604,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
                 </div>
 
                 {/* Front cover */}
-                <div className="absolute inset-0 rounded-[6px] overflow-hidden" style={{ boxShadow: '10px 15px 35px rgba(0,0,0,0.22)' }}>
+                <div className="absolute inset-0 rounded-[6px] overflow-hidden" style={{ boxShadow: '0px 8px 30px rgba(0,0,0,0.15)' }}>
                   <img src={book.image} alt={book.title} className="absolute inset-0 w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-tr from-black/15 via-transparent to-white/15 pointer-events-none" />
                   <div className="absolute left-0 inset-y-0 w-[5px] bg-gradient-to-r from-black/35 to-transparent pointer-events-none" />
@@ -619,7 +619,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
                   WebkitBackfaceVisibility: 'hidden',
                   transform: 'rotateY(180deg)',
                   backgroundColor: dominantColor,
-                  boxShadow: '-10px 15px 35px rgba(0,0,0,0.28)'
+                  boxShadow: '0px 8px 30px rgba(0,0,0,0.15)'
                 }}
               >
                 <div className="relative flex flex-col justify-start gap-[10px] md:gap-[14px] h-full p-[8%]">

@@ -62,7 +62,7 @@ export function BookCard({ book, onSelect, isMatched = true, isFirstRow, isFirst
         >
           {/* --- BACK COVER & PAGES (Static inside) --- */}
           <div 
-            className="absolute inset-0 bg-stone-200 dark:bg-stone-800 rounded-[3px] shadow-[0px_5px_26px_3px_rgba(32,31,49,0.08)]" 
+            className="absolute inset-0 bg-stone-200 dark:bg-stone-800 rounded-[3px] shadow-[0px_4px_18px_rgba(0,0,0,0.06)]" 
             style={{ transform: 'translateZ(-15px) translateX(2px)' }}
           >
             {/* Simulated page edges */}
@@ -94,13 +94,11 @@ export function BookCard({ book, onSelect, isMatched = true, isFirstRow, isFirst
             variants={{
               rest: { 
                 rotateY: 0, 
-                // Reduced shadow opacity significantly
-                boxShadow: '-3px 5px 15px rgba(0,0,0,0.15)' 
+                boxShadow: '0px 3px 12px rgba(0,0,0,0.10)' 
               },
               hover: { 
                 rotateY: -25,
-                // Reduced hover shadow opacity
-                boxShadow: '8px 12px 25px rgba(0,0,0,0.25)' 
+                boxShadow: '0px 6px 18px rgba(0,0,0,0.15)' 
               }
             }}
             transition={{ type: 'spring', stiffness: 250, damping: 25 }}
