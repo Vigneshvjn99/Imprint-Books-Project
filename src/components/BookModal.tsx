@@ -71,37 +71,55 @@ export function BookModal({ book, onClose }: BookModalProps) {
     return () => observer.disconnect();
   }, [formattedTitle]);
 
-  // Extract dominant colour from book cover image using a hidden canvas
+  // Extract dominant colour from book cover using bucket quantisation across the full image
   useEffect(() => {
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.src = book.image;
     img.onload = () => {
       try {
+        const SIZE = 80; // sample at 80×80 for good coverage without perf cost
         const canvas = document.createElement('canvas');
-        // Sample a small region for perf — 20×20 from the top-left quadrant
-        canvas.width = 20;
-        canvas.height = 20;
+        canvas.width = SIZE;
+        canvas.height = SIZE;
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
-        ctx.drawImage(img, 0, 0, img.naturalWidth * 0.5, img.naturalHeight * 0.5, 0, 0, 20, 20);
-        const data = ctx.getImageData(0, 0, 20, 20).data;
-        let r = 0, g = 0, b = 0, count = 0;
+        // Draw the full image scaled down into the canvas
+        ctx.drawImage(img, 0, 0, SIZE, SIZE);
+        const data = ctx.getImageData(0, 0, SIZE, SIZE).data;
+
+        // Bucket quantisation: round each channel to nearest step
+        // Step = 12 gives ~21 buckets per channel — fine enough to distinguish main colours
+        const STEP = 12;
+        const buckets: Record<string, { count: number; r: number; g: number; b: number }> = {};
+
         for (let i = 0; i < data.length; i += 4) {
-          r += data[i]; g += data[i + 1]; b += data[i + 2]; count++;
+          const a = data[i + 3];
+          if (a < 128) continue; // skip transparent pixels
+          const r = Math.round(data[i]     / STEP) * STEP;
+          const g = Math.round(data[i + 1] / STEP) * STEP;
+          const b = Math.round(data[i + 2] / STEP) * STEP;
+          const key = `${r},${g},${b}`;
+          if (!buckets[key]) buckets[key] = { count: 0, r, g, b };
+          buckets[key].count++;
         }
-        r = Math.floor(r / count);
-        g = Math.floor(g / count);
-        b = Math.floor(b / count);
-        // Darken slightly so text is always readable
-        const darken = (v: number) => Math.max(0, Math.floor(v * 0.6));
-        const bgColor = `rgb(${darken(r)}, ${darken(g)}, ${darken(b)})`;
-        setDominantColor(bgColor);
-        // Pick white or dark text based on perceived brightness of darkened colour
-        const brightness = (darken(r) * 299 + darken(g) * 587 + darken(b) * 114) / 1000;
-        setTextColor(brightness > 128 ? '#1a1a1a' : '#ffffff');
+
+        // Find the most frequent bucket
+        let best = { count: 0, r: 42, g: 42, b: 42 };
+        for (const bucket of Object.values(buckets)) {
+          if (bucket.count > best.count) best = bucket;
+        }
+
+        // Convert to hex — no darkening, use the raw dominant colour
+        const toHex = (v: number) => v.toString(16).padStart(2, '0');
+        const hex = `#${toHex(best.r)}${toHex(best.g)}${toHex(best.b)}`;
+        setDominantColor(hex);
+
+        // Pick white or dark text based on W3C perceived brightness
+        const brightness = (best.r * 299 + best.g * 587 + best.b * 114) / 1000;
+        setTextColor(brightness > 145 ? '#1a1a1a' : '#ffffff');
       } catch (_) {
-        // Cross-origin or canvas blocked — keep defaults
+        // Cross-origin or canvas tainted — keep defaults
       }
     };
   }, [book.image]);
@@ -607,7 +625,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
                 </div>
               </div>
 
-              {/* ── BACK FACE ── (rotated 180° so it shows when flipped) */}
+              {/* ── BACK FACE ── flat solid dominant colour, no overlays */}
               <div
                 className="absolute inset-0 rounded-[6px] overflow-hidden"
                 style={{
@@ -618,10 +636,6 @@ export function BookModal({ book, onClose }: BookModalProps) {
                   boxShadow: '-10px 15px 35px rgba(0,0,0,0.28)'
                 }}
               >
-                {/* Subtle texture overlay */}
-                <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'url(/books/paper_texture.png)', backgroundSize: 'cover' }} />
-                {/* Soft vignette */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/25 pointer-events-none" />
 
                 {/* Author content */}
                 <div className="relative z-10 flex flex-col justify-between h-full p-[8%]" style={{ color: textColor }}>
