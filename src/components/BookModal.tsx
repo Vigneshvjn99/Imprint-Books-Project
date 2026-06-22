@@ -29,8 +29,8 @@ export function BookModal({ book, onClose }: BookModalProps) {
   const hasFlippedOnce = useRef(false);
 
   // Card deck cycle state
-  const [cardOrder, setCardOrder] = useState<('book' | 'author' | 'who')[]>(['book', 'author', 'who']);
-  const [swappingCard, setSwappingCard] = useState<'book' | 'author' | 'who' | null>(null);
+  const [cardOrder, setCardOrder] = useState<('book' | 'who')[]>(['book', 'who']);
+  const [swappingCard, setSwappingCard] = useState<'book' | 'who' | null>(null);
 
   // Prevent typographic orphans (single word wrapping to the second line)
   const formattedTitle = (() => {
@@ -277,7 +277,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
     }
   };
 
-  const cycleCard = (cardKey: 'book' | 'author' | 'who') => {
+  const cycleCard = (cardKey: 'book' | 'who') => {
     // Only cycle when the top card is clicked
     if (cardOrder[0] !== cardKey || swappingCard !== null) return;
     
@@ -294,7 +294,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
     }, 280);
   };
 
-  const getCardStyles = (cardKey: 'book' | 'author' | 'who') => {
+  const getCardStyles = (cardKey: 'book' | 'who') => {
     const position = cardOrder.indexOf(cardKey);
     const isSwapping = swappingCard === cardKey;
 
@@ -311,7 +311,6 @@ export function BookModal({ book, onClose }: BookModalProps) {
 
     const baseRotations = {
       book: -1.49,
-      author: 5.57,
       who: 9.43
     };
 
@@ -358,15 +357,6 @@ export function BookModal({ book, onClose }: BookModalProps) {
       iconClass: "dark:invert",
       textColor: "text-[#1a1a1a] dark:text-[#e4e4e7]",
       content: details?.aboutBook || 'Loading...'
-    },
-    author: {
-      title: "ABOUT THE AUTHOR",
-      bg: "bg-[#373737] dark:bg-[#333333] text-white",
-      headerColor: "text-white/60",
-      iconSrc: "/books/icon_author.svg",
-      iconClass: "brightness-0 invert",
-      textColor: "text-white",
-      content: details?.aboutAuthor || 'Loading...'
     },
     who: {
       title: "WHO SHOULD GET THIS",
@@ -676,16 +666,16 @@ export function BookModal({ book, onClose }: BookModalProps) {
         {/* Draggable Cards Container */}
         {/* Draggable Cards Container */}
         <DraggableCardContainer className="relative w-full max-w-[var(--card-max-width)] h-[calc(var(--card-height)+96px)] flex items-center justify-center mt-12 md:mt-0 pointer-events-auto">
-          {['who', 'author', 'book'].map((cardKey) => {
-            const config = cardConfig[cardKey as 'book' | 'author' | 'who'];
+          {['who', 'book'].map((cardKey) => {
+            const config = cardConfig[cardKey as 'book' | 'who'];
             const isTopCard = cardOrder[0] === cardKey;
 
             return (
               <DraggableCardBody
                 key={cardKey}
                 draggable={false}
-                animate={getCardStyles(cardKey as 'book' | 'author' | 'who')}
-                onClick={() => cycleCard(cardKey as 'book' | 'author' | 'who')}
+                animate={getCardStyles(cardKey as 'book' | 'who')}
+                onClick={() => cycleCard(cardKey as 'book' | 'who')}
                 className={`absolute flex flex-col justify-start gap-[10px] md:gap-[14px] ${config.bg} ${
                   isTopCard ? 'pointer-events-auto cursor-pointer' : 'pointer-events-none'
                 }`}
@@ -731,12 +721,6 @@ export function BookModal({ book, onClose }: BookModalProps) {
                           <>
                             <span className="text-[10px] md:text-[11px] font-sans font-medium px-2.5 py-1 bg-black/5 dark:bg-white/10 rounded-full uppercase tracking-wider text-black/60 dark:text-white/80">Seminal Work</span>
                             <span className="text-[10px] md:text-[11px] font-sans font-medium px-2.5 py-1 bg-black/5 dark:bg-white/10 rounded-full uppercase tracking-wider text-black/60 dark:text-white/80">Core Theory</span>
-                          </>
-                        )}
-                        {cardKey === 'author' && (
-                          <>
-                            <span className="text-[10px] md:text-[11px] font-sans font-medium px-2.5 py-1 bg-white/10 rounded-full uppercase tracking-wider text-white/70">Expert Insight</span>
-                            <span className="text-[10px] md:text-[11px] font-sans font-medium px-2.5 py-1 bg-white/10 rounded-full uppercase tracking-wider text-white/70">Design Legacy</span>
                           </>
                         )}
                         {cardKey === 'who' && (
