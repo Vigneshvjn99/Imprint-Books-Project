@@ -637,7 +637,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
                   />
 
                   {/* Author name */}
-                  <p className="text-[13px] md:text-[15px] lg:text-[17px] font-semibold font-sans leading-tight opacity-90" style={{ color: textColor }}>
+                  <p className="text-[15px] md:text-[17px] lg:text-[19px] font-semibold font-sans leading-tight opacity-90" style={{ color: textColor }}>
                     {book.author}
                   </p>
 
@@ -653,7 +653,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
                       </div>
                     ) : (
                       <p
-                        className="text-[11px] md:text-[12px] lg:text-[14px] leading-[1.55] font-['Fraunces'] opacity-85"
+                        className="text-[13px] md:text-[14px] lg:text-[16px] leading-[1.55] font-['Fraunces'] opacity-85"
                         style={{ color: textColor, fontVariationSettings: '"SOFT" 0, "WONK" 1' }}
                       >
                         {details?.aboutAuthor}
