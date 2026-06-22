@@ -24,6 +24,8 @@ export function BookModal({ book, onClose }: BookModalProps) {
 
   // Book cover flip state
   const [isFlipped, setIsFlipped] = useState(false);
+  const [dominantColor, setDominantColor] = useState<string>('#2a2a2a');
+  const [textColor, setTextColor] = useState<string>('#ffffff');
   const hasFlippedOnce = useRef(false);
 
   // Card deck cycle state
@@ -69,9 +71,44 @@ export function BookModal({ book, onClose }: BookModalProps) {
     return () => observer.disconnect();
   }, [formattedTitle]);
 
-  // (Colour extraction removed — back face uses fixed #373737 to match author card)
-
-
+  // Extract dominant colour from book cover using bucket quantisation across the full image
+  useEffect(() => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = book.image;
+    img.onload = () => {
+      try {
+        const SIZE = 80;
+        const canvas = document.createElement('canvas');
+        canvas.width = SIZE;
+        canvas.height = SIZE;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        ctx.drawImage(img, 0, 0, SIZE, SIZE);
+        const data = ctx.getImageData(0, 0, SIZE, SIZE).data;
+        const STEP = 12;
+        const buckets: Record<string, { count: number; r: number; g: number; b: number }> = {};
+        for (let i = 0; i < data.length; i += 4) {
+          const a = data[i + 3];
+          if (a < 128) continue;
+          const r = Math.round(data[i]     / STEP) * STEP;
+          const g = Math.round(data[i + 1] / STEP) * STEP;
+          const b = Math.round(data[i + 2] / STEP) * STEP;
+          const key = `${r},${g},${b}`;
+          if (!buckets[key]) buckets[key] = { count: 0, r, g, b };
+          buckets[key].count++;
+        }
+        let best = { count: 0, r: 42, g: 42, b: 42 };
+        for (const bucket of Object.values(buckets)) {
+          if (bucket.count > best.count) best = bucket;
+        }
+        const toHex = (v: number) => v.toString(16).padStart(2, '0');
+        setDominantColor(`#${toHex(best.r)}${toHex(best.g)}${toHex(best.b)}`);
+        const brightness = (best.r * 299 + best.g * 587 + best.b * 114) / 1000;
+        setTextColor(brightness > 145 ? '#1a1a1a' : '#ffffff');
+      } catch (_) { /* cross-origin blocked — keep defaults */ }
+    };
+  }, [book.image]);
 
   // Prevent scrolling on the body while modal is open
   useEffect(() => {
@@ -574,52 +611,55 @@ export function BookModal({ book, onClose }: BookModalProps) {
                 </div>
               </div>
 
-              {/* ── BACK FACE ── styled like the author card */}
+              {/* ── BACK FACE ── book's dominant colour bg, author card format */}
               <div
                 className="absolute inset-0 rounded-[6px] overflow-hidden"
                 style={{
                   backfaceVisibility: 'hidden',
                   WebkitBackfaceVisibility: 'hidden',
                   transform: 'rotateY(180deg)',
-                  backgroundColor: '#373737',
+                  backgroundColor: dominantColor,
                   boxShadow: '-10px 15px 35px rgba(0,0,0,0.28)'
                 }}
               >
-                {/* Author card content — same format as the stacked card */}
                 <div className="relative flex flex-col justify-start gap-[10px] md:gap-[14px] h-full p-[8%]">
 
-                  {/* Author icon — same as the card */}
+                  {/* Author icon — colour-adapted to bg brightness */}
                   <img
                     src="/books/icon_author.svg"
                     alt=""
-                    className="shrink-0 object-contain aspect-square brightness-0 invert mt-1"
-                    style={{ width: 'var(--card-icon-size)', height: 'var(--card-icon-size)' }}
+                    className="shrink-0 object-contain aspect-square mt-1"
+                    style={{
+                      width: 'var(--card-icon-size)',
+                      height: 'var(--card-icon-size)',
+                      filter: textColor === '#ffffff' ? 'brightness(0) invert(1)' : 'brightness(0)'
+                    }}
                   />
 
                   {/* Author name */}
-                  <p className="text-[13px] md:text-[15px] lg:text-[17px] font-semibold font-sans leading-tight text-white opacity-90">
+                  <p className="text-[13px] md:text-[15px] lg:text-[17px] font-semibold font-sans leading-tight opacity-90" style={{ color: textColor }}>
                     {book.author}
                   </p>
 
-                  <div className="w-8 h-[1.5px] rounded-full bg-white opacity-20" />
+                  <div className="w-8 h-[1.5px] rounded-full opacity-25" style={{ backgroundColor: textColor }} />
 
                   {/* Author description */}
                   <div className="flex-1 overflow-hidden">
                     {isLoading ? (
                       <div className="space-y-2">
-                        <div className="h-3 w-full rounded bg-white/10" />
-                        <div className="h-3 w-[85%] rounded bg-white/10" />
-                        <div className="h-3 w-[70%] rounded bg-white/10" />
+                        <div className="h-3 w-full rounded opacity-10" style={{ backgroundColor: textColor }} />
+                        <div className="h-3 w-[85%] rounded opacity-10" style={{ backgroundColor: textColor }} />
+                        <div className="h-3 w-[70%] rounded opacity-10" style={{ backgroundColor: textColor }} />
                       </div>
                     ) : (
                       <p
-                        className="text-[11px] md:text-[12px] lg:text-[14px] leading-[1.55] font-['Fraunces'] text-white opacity-85"
-                        style={{ fontVariationSettings: '"SOFT" 0, "WONK" 1' }}
+                        className="text-[11px] md:text-[12px] lg:text-[14px] leading-[1.55] font-['Fraunces'] opacity-85"
+                        style={{ color: textColor, fontVariationSettings: '"SOFT" 0, "WONK" 1' }}
                       >
                         {details?.aboutAuthor}
                       </p>
                     )}
-                    </div>
+                  </div>
                 </div>
               </div>
 
