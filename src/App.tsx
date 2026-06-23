@@ -201,11 +201,6 @@ function App() {
                     transition={{ type: 'spring', stiffness: 80, damping: 15 }}
                   />
                 </div>
-                {/* Progress Text */}
-                <div className="flex justify-between items-center text-[11px] font-sans font-semibold tracking-widest opacity-40 uppercase">
-                  <span>Loading Library</span>
-                  <span>{preloadProgress}%</span>
-                </div>
               </div>
             </div>
           </motion.div>
