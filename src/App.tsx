@@ -75,7 +75,6 @@ function App() {
 
   // Cover preloading state
   const [isPreloading, setIsPreloading] = useState(true);
-  const [preloadProgress, setPreloadProgress] = useState(0);
   const [assetsLoaded, setAssetsLoaded] = useState(false);
   const [isTypingFinished, setIsTypingFinished] = useState(false);
 
@@ -101,8 +100,6 @@ function App() {
 
     const handleAssetLoaded = () => {
       loadedCount++;
-      const progress = Math.round((loadedCount / totalCount) * 100);
-      setPreloadProgress(progress);
       if (loadedCount >= totalCount) {
         setAssetsLoaded(true);
       }
@@ -232,17 +229,6 @@ function App() {
                 />
               </motion.div>
 
-              {/* Progress Container */}
-              <div className="w-full flex flex-col gap-2 mt-4">
-                {/* Minimal Progress Bar */}
-                <div className="h-[2px] w-full bg-black/5 dark:bg-white/10 rounded-full overflow-hidden relative">
-                  <motion.div 
-                    className="absolute left-0 top-0 bottom-0 bg-black dark:bg-white"
-                    style={{ width: `${preloadProgress}%` }}
-                    transition={{ type: 'spring', stiffness: 80, damping: 15 }}
-                  />
-                </div>
-              </div>
             </div>
           </motion.div>
         )}
