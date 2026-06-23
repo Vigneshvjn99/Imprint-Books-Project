@@ -567,20 +567,16 @@ export function BookModal({ book, onClose }: BookModalProps) {
               {!isFlipped && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.8, x: -10 }}
-                  animate={{ opacity: 0.75, scale: 1, x: 0 }}
+                  animate={{ opacity: 1, scale: 1, x: 0 }}
                   exit={{ opacity: 0, scale: 0.8, x: -10 }}
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  className="absolute left-full top-1/2 -translate-y-1/2 ml-4 p-2.5 rounded-full bg-white/70 dark:bg-black/70 backdrop-blur-md border border-black/5 dark:border-white/10 shadow-md text-black dark:text-white pointer-events-none select-none z-30 flex items-center justify-center cursor-pointer"
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                  }}
+                  className="absolute left-full top-1/2 -translate-y-1/2 ml-4 text-black/30 dark:text-white/30 pointer-events-none select-none z-30 flex items-center justify-center"
                 >
                   <svg
                     viewBox="0 0 17 22"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
-                    className="w-5 h-auto text-black dark:text-white"
+                    className="w-6 h-auto"
                   >
                     <path
                       d="M10.5 4.5C10.5 3.43913 10.0259 2.42172 9.18198 1.67157C8.33807 0.921427 7.19347 0.5 6 0.5C4.80653 0.5 3.66193 0.921427 2.81802 1.67157C1.97411 2.42172 1.5 3.43913 1.5 4.5"
