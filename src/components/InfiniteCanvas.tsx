@@ -63,8 +63,8 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
       const initialX = Math.max(minX, Math.min(0, (viewportWidth - gridWidth) / 2));
       const initialY = Math.max(minY, Math.min(0, (viewportHeight - gridHeight) / 2));
 
-      x.set(initialX);
-      y.set(initialY);
+      x.jump(initialX);
+      y.jump(initialY);
     };
 
     // Use a small timeout or requestAnimationFrame to make sure rendering layout is complete
