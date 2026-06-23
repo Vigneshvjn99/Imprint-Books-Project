@@ -552,10 +552,11 @@ export function BookModal({ book, onClose }: BookModalProps) {
             initial="initial"
             animate="animate"
             exit="exit"
-            className="relative z-20 w-[calc(var(--book-height)*var(--book-aspect))] h-[var(--book-height)] shrink-0 cursor-pointer pointer-events-auto"
+            className="relative z-20 w-[calc(var(--book-height)*var(--book-aspect)*var(--book-scale))] h-[calc(var(--book-height)*var(--book-scale))] shrink-0 cursor-pointer pointer-events-auto"
             style={{
               perspective: '1400px',
               '--book-aspect': (book.width && book.height) ? (book.width / book.height) : (222 / 334),
+              '--book-scale': book.title.includes('100 Things') ? 0.88 : 1,
               marginBottom: isTwoLines ? '20px' : '30px'
             } as React.CSSProperties}
             onClick={handleCoverFlip}
