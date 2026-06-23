@@ -570,7 +570,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
                   animate={{ opacity: 1, scale: 1, x: 0 }}
                   exit={{ opacity: 0, scale: 0.8, x: -10 }}
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  className="absolute left-full top-1/2 -translate-y-1/2 ml-6 text-black/30 dark:text-white/30 pointer-events-none select-none z-30 flex items-center justify-center"
+                  className="absolute left-full top-1/2 -translate-y-1/2 ml-10 text-black/30 dark:text-white/30 pointer-events-none select-none z-30 flex items-center justify-center"
                 >
                   <svg
                     viewBox="0 0 17 22"
