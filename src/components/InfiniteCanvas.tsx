@@ -46,6 +46,32 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
 
   const clamp = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val));
 
+  // Center canvas on first load
+  useEffect(() => {
+    if (!containerRef.current || !gridRef.current) return;
+    
+    // We delay slightly or run in next frame to ensure layouts have computed.
+    const centerCanvas = () => {
+      const viewportWidth = containerRef.current!.clientWidth;
+      const viewportHeight = containerRef.current!.clientHeight;
+      const gridWidth = gridRef.current!.scrollWidth;
+      const gridHeight = gridRef.current!.scrollHeight;
+
+      const minX = Math.min(0, viewportWidth - gridWidth);
+      const minY = Math.min(0, viewportHeight - gridHeight);
+
+      const initialX = Math.max(minX, Math.min(0, (viewportWidth - gridWidth) / 2));
+      const initialY = Math.max(minY, Math.min(0, (viewportHeight - gridHeight) / 2));
+
+      x.set(initialX);
+      y.set(initialY);
+    };
+
+    // Use a small timeout or requestAnimationFrame to make sure rendering layout is complete
+    const timeoutId = setTimeout(centerCanvas, 50);
+    return () => clearTimeout(timeoutId);
+  }, [x, y]);
+
   const getBounds = useCallback(() => {
     if (!containerRef.current || !gridRef.current) return { minX: 0, maxX: 0, minY: 0, maxY: 0 };
     const viewportWidth = containerRef.current.clientWidth;
