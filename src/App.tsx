@@ -9,36 +9,36 @@ import { Logo } from './components/ui/Logo';
 
 function generateBooks(): Book[] {
   const baseBooks = [
-    { title: 'Grid Systems', author: 'Josef Müller-Brockmann', image: '/books/book_0.png', backCover: '/books/back_book_0.png', category: 'Graphic Design' },
-    { title: 'Palette Perfect', author: 'Sara Caldas', image: '/books/book_1.png', backCover: '/books/back_book_1.png', category: 'Graphic Design' },
-    { title: 'Expressive Type Today', author: 'Counter-Print Books', image: '/books/book_2.png', backCover: '/books/back_book_2.png', category: 'Graphic Design' },
-    { title: 'Strategic Creativity', author: 'Robin Landa', image: '/books/book_3.png', backCover: '/books/back_book_3.png', category: 'Graphic Design' },
-    { title: 'Logo Modernism', author: 'Jens Müller', image: '/books/book_4.png', category: 'Graphic Design' },
-    { title: 'Sprint', author: 'Jake Knapp', image: '/books/book_5.png', category: 'Product Design' },
-    { title: 'The Graphic Design Idea Book', author: 'Steven Heller', image: '/books/book_6.png', category: 'Graphic Design' },
-    { title: 'Oh Sh*t What Now?', author: 'Craig Ward', image: '/books/book_7_new.png', category: 'Graphic Design' },
-    { title: 'Design as Art', author: 'Bruno Munari', image: '/books/book_8.png', category: 'Graphic Design' },
-    { title: 'NASA Graphics Standards Manual', author: 'Richard Danne', image: '/books/book_9.png', category: 'Graphic Design' },
-    { title: 'The Design of Everyday Things', author: 'Don Norman', image: '/books/book_10.png', category: 'Product Design' },
-    { title: 'White Space is Not Your Enemy', author: 'Kim Golombisky', image: '/books/book_11.png', backCover: '/books/back_book_11.png', category: 'Graphic Design' },
-    { title: 'Graphic Design 1890-Today', author: 'Jens Müller, Julius Wiedemann', image: '/books/book_12.png', backCover: '/books/back_book_12.png', category: 'Graphic Design' },
-    { title: 'The User Experience Team of One', author: 'Leah Buley', image: '/books/book_13.png', backCover: '/books/back_book_13.png', category: 'Product Design' },
-    { title: 'Articulating Design Decisions', author: 'Tom Greever', image: '/books/book_14.png', category: 'Product Design' },
-    { title: 'Mismatch', author: 'Kat Holmes', image: '/books/book_15.png', category: 'Product Design' },
-    { title: 'User Friendly', author: 'Cliff Kuang', image: '/books/book_16.png', category: 'Product Design' },
-    { title: 'Hooked', author: 'Nir Eyal', image: '/books/book_17.png', category: 'Product Design' },
-    { title: 'Creative Confidence', author: 'Tom Kelley & David Kelley', image: '/books/book_18.png', category: 'Product Design', width: 222, height: 334 },
-    { title: '100 Things Every Designer Needs to Know', author: 'Susan M. Weinschenk', image: '/books/book_19.png', category: 'Product Design', width: 250, height: 320 },
-    { title: 'Steal Like an Artist', author: 'Austin Kleon', image: '/books/book_20.png', category: 'Product Design', width: 240, height: 240 },
-    { title: 'Laws of UX', author: 'Jon Yablonski', image: '/books/book_21.png', backCover: '/books/back_book_21.png', category: 'Product Design', width: 222, height: 334 },
-    { title: 'Interaction of Color', author: 'Josef Albers', image: '/books/book_22.png', backCover: '/books/back_book_22.png', category: 'Graphic Design', width: 218, height: 334 },
-    { title: 'Thinking with Type', author: 'Ellen Lupton', image: '/books/book_23.png', backCover: '/books/back_book_23.png', category: 'Graphic Design', width: 275, height: 334 },
-    { title: 'Geometry of Design', author: 'Kimberly Elam', image: '/books/book_24.png', backCover: '/books/back_book_24.png', category: 'Graphic Design', width: 277, height: 334 },
-    { title: 'Designing Brand Identity', author: 'Alina Wheeler, Rob Meyerson', image: '/books/book_25.png', backCover: '/books/back_book_25.png', category: 'Graphic Design', width: 263, height: 334 },
-    { title: 'How to Solve It', author: 'George Polya', image: '/books/book_26.png', category: 'Graphic Design', width: 218, height: 334 },
-    { title: 'Visual Grammar', author: 'Christian Leborg', image: '/books/book_27.png', category: 'Graphic Design', width: 275, height: 334 },
-    { title: 'Just My Type', author: 'Simon Garfield', image: '/books/book_28.png', category: 'Graphic Design', width: 217, height: 334 },
-    { title: 'Graphic Design Manual', author: 'Armin Hofmann', image: '/books/book_29.png', category: 'Graphic Design', width: 286, height: 334 }
+    { title: 'Grid Systems', author: 'Josef Müller-Brockmann', image: '/books/book_0.jpg', backCover: '/books/back_book_0.png', category: 'Graphic Design' },
+    { title: 'Palette Perfect', author: 'Sara Caldas', image: '/books/book_1.jpg', backCover: '/books/back_book_1.png', category: 'Graphic Design' },
+    { title: 'Expressive Type Today', author: 'Counter-Print Books', image: '/books/book_2.jpg', backCover: '/books/back_book_2.png', category: 'Graphic Design' },
+    { title: 'Strategic Creativity', author: 'Robin Landa', image: '/books/book_3.jpg', backCover: '/books/back_book_3.png', category: 'Graphic Design' },
+    { title: 'Logo Modernism', author: 'Jens Müller', image: '/books/book_4.jpg', category: 'Graphic Design' },
+    { title: 'Sprint', author: 'Jake Knapp', image: '/books/book_5.jpg', category: 'Product Design' },
+    { title: 'The Graphic Design Idea Book', author: 'Steven Heller', image: '/books/book_6.jpg', category: 'Graphic Design' },
+    { title: 'Oh Sh*t What Now?', author: 'Craig Ward', image: '/books/book_7_new.jpg', category: 'Graphic Design' },
+    { title: 'Design as Art', author: 'Bruno Munari', image: '/books/book_8.jpg', category: 'Graphic Design' },
+    { title: 'NASA Graphics Standards Manual', author: 'Richard Danne', image: '/books/book_9.jpg', category: 'Graphic Design' },
+    { title: 'The Design of Everyday Things', author: 'Don Norman', image: '/books/book_10.jpg', category: 'Product Design' },
+    { title: 'White Space is Not Your Enemy', author: 'Kim Golombisky', image: '/books/book_11.jpg', backCover: '/books/back_book_11.png', category: 'Graphic Design' },
+    { title: 'Graphic Design 1890-Today', author: 'Jens Müller, Julius Wiedemann', image: '/books/book_12.jpg', backCover: '/books/back_book_12.png', category: 'Graphic Design' },
+    { title: 'The User Experience Team of One', author: 'Leah Buley', image: '/books/book_13.jpg', backCover: '/books/back_book_13.png', category: 'Product Design' },
+    { title: 'Articulating Design Decisions', author: 'Tom Greever', image: '/books/book_14.jpg', category: 'Product Design' },
+    { title: 'Mismatch', author: 'Kat Holmes', image: '/books/book_15.jpg', category: 'Product Design' },
+    { title: 'User Friendly', author: 'Cliff Kuang', image: '/books/book_16.jpg', category: 'Product Design' },
+    { title: 'Hooked', author: 'Nir Eyal', image: '/books/book_17.jpg', category: 'Product Design' },
+    { title: 'Creative Confidence', author: 'Tom Kelley & David Kelley', image: '/books/book_18.jpg', category: 'Product Design', width: 222, height: 334 },
+    { title: '100 Things Every Designer Needs to Know', author: 'Susan M. Weinschenk', image: '/books/book_19.jpg', category: 'Product Design', width: 250, height: 320 },
+    { title: 'Steal Like an Artist', author: 'Austin Kleon', image: '/books/book_20.jpg', category: 'Product Design', width: 240, height: 240 },
+    { title: 'Laws of UX', author: 'Jon Yablonski', image: '/books/book_21.jpg', backCover: '/books/back_book_21.png', category: 'Product Design', width: 222, height: 334 },
+    { title: 'Interaction of Color', author: 'Josef Albers', image: '/books/book_22.jpg', backCover: '/books/back_book_22.png', category: 'Graphic Design', width: 218, height: 334 },
+    { title: 'Thinking with Type', author: 'Ellen Lupton', image: '/books/book_23.jpg', backCover: '/books/back_book_23.png', category: 'Graphic Design', width: 275, height: 334 },
+    { title: 'Geometry of Design', author: 'Kimberly Elam', image: '/books/book_24.jpg', backCover: '/books/back_book_24.png', category: 'Graphic Design', width: 277, height: 334 },
+    { title: 'Designing Brand Identity', author: 'Alina Wheeler, Rob Meyerson', image: '/books/book_25.jpg', backCover: '/books/back_book_25.png', category: 'Graphic Design', width: 263, height: 334 },
+    { title: 'How to Solve It', author: 'George Polya', image: '/books/book_26.jpg', category: 'Graphic Design', width: 218, height: 334 },
+    { title: 'Visual Grammar', author: 'Christian Leborg', image: '/books/book_27.jpg', category: 'Graphic Design', width: 275, height: 334 },
+    { title: 'Just My Type', author: 'Simon Garfield', image: '/books/book_28.jpg', category: 'Graphic Design', width: 217, height: 334 },
+    { title: 'Graphic Design Manual', author: 'Armin Hofmann', image: '/books/book_29.jpg', category: 'Graphic Design', width: 286, height: 334 }
   ];
 
   
@@ -71,6 +71,50 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'All' | 'Graphic Design' | 'Product Design'>('All');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  // Cover preloading state
+  const [isPreloading, setIsPreloading] = useState(true);
+  const [preloadProgress, setPreloadProgress] = useState(0);
+
+  useEffect(() => {
+    // Collect all unique images & assets to preload
+    const assetsToPreload = [
+      ...books.map(b => b.image),
+      '/books/spine.png',
+      '/books/icon_author.svg',
+      '/books/icon_book.svg',
+      '/books/icon_who.svg',
+      '/books/icon_click.svg',
+      '/books/paper_texture.png'
+    ];
+
+    let loadedCount = 0;
+    const totalCount = assetsToPreload.length;
+
+    if (totalCount === 0) {
+      setIsPreloading(false);
+      return;
+    }
+
+    const handleAssetLoaded = () => {
+      loadedCount++;
+      const progress = Math.round((loadedCount / totalCount) * 100);
+      setPreloadProgress(progress);
+      if (loadedCount >= totalCount) {
+        // Delay slightly for smooth completion animation transition
+        setTimeout(() => {
+          setIsPreloading(false);
+        }, 350);
+      }
+    };
+
+    assetsToPreload.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+      img.onload = handleAssetLoaded;
+      img.onerror = handleAssetLoaded; // continue if a load fails
+    });
+  }, [books]);
   
 
   const playSoftClick = (type: 'open' | 'close' = 'open') => {
@@ -127,6 +171,47 @@ function App() {
 
   return (
     <LayoutGroup>
+      {/* Visual Preloader */}
+      <AnimatePresence>
+        {isPreloading && (
+          <motion.div
+            key="preloader"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.6, ease: [0.4, 0, 0.2, 1] } }}
+            className="fixed inset-0 flex flex-col items-center justify-center font-sans bg-[#fbfaf5] dark:bg-[#161616]"
+            style={{ zIndex: 100 }}
+          >
+            <div className="flex flex-col items-center max-w-[280px] w-full text-center gap-6">
+              {/* Animated Logo */}
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+              >
+                <Logo className="h-10 w-auto" />
+              </motion.div>
+
+              {/* Progress Container */}
+              <div className="w-full flex flex-col gap-2 mt-4">
+                {/* Minimal Progress Bar */}
+                <div className="h-[2px] w-full bg-black/5 dark:bg-white/10 rounded-full overflow-hidden relative">
+                  <motion.div 
+                    className="absolute left-0 top-0 bottom-0 bg-black dark:bg-white"
+                    style={{ width: `${preloadProgress}%` }}
+                    transition={{ type: 'spring', stiffness: 80, damping: 15 }}
+                  />
+                </div>
+                {/* Progress Text */}
+                <div className="flex justify-between items-center text-[11px] font-sans font-semibold tracking-widest opacity-40 uppercase">
+                  <span>Loading Library</span>
+                  <span>{preloadProgress}%</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <InfiniteCanvas>
         {/* Populating sideways (columns) using 5 rows (flows up to 6 columns) to achieve balanced horizontal/vertical scroll */}
         <div className="grid grid-rows-5 grid-flow-col gap-0 w-max h-max p-[100px] bg-[#fbfaf5] dark:bg-[#161616] transition-colors duration-700">
