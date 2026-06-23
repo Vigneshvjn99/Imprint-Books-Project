@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import type { Book } from './BookCard';
 import { BackgroundRippleEffect } from './ui/background-ripple-effect';
@@ -562,6 +562,45 @@ export function BookModal({ book, onClose }: BookModalProps) {
             onClick={handleCoverFlip}
             title={isFlipped ? 'Click to flip back' : 'Click to flip'}
           >
+            {/* Tap/Click Hand Indicator */}
+            <AnimatePresence>
+              {!isFlipped && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8, x: -10 }}
+                  animate={{ opacity: 0.75, scale: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.8, x: -10 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  className="absolute left-full top-1/2 -translate-y-1/2 ml-4 p-2.5 rounded-full bg-white/70 dark:bg-black/70 backdrop-blur-md border border-black/5 dark:border-white/10 shadow-md text-black dark:text-white pointer-events-none select-none z-30 flex items-center justify-center cursor-pointer"
+                  style={{
+                    width: '40px',
+                    height: '40px',
+                  }}
+                >
+                  <svg
+                    viewBox="0 0 17 22"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-5 h-auto text-black dark:text-white"
+                  >
+                    <path
+                      d="M10.5 4.5C10.5 3.43913 10.0259 2.42172 9.18198 1.67157C8.33807 0.921427 7.19347 0.5 6 0.5C4.80653 0.5 3.66193 0.921427 2.81802 1.67157C1.97411 2.42172 1.5 3.43913 1.5 4.5"
+                      stroke="currentColor"
+                      strokeOpacity="0.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M7.77252 7.87798V4.9966C7.76226 4.59599 7.60453 4.21543 7.33289 3.93591C7.06126 3.6564 6.69717 3.5 6.31812 3.5C5.93907 3.5 5.57498 3.6564 5.30335 3.93591C5.03172 4.21543 4.87398 4.59599 4.86372 4.9966V13.8967L3.29252 12.2536C3.12885 12.0837 2.93348 11.9517 2.71885 11.8661C2.50423 11.7805 2.27508 11.7431 2.04603 11.7563C1.81699 11.7696 1.59307 11.8332 1.38858 11.9431C1.18408 12.053 1.00351 12.2068 0.858382 12.3946C0.632154 12.6889 0.506013 13.055 0.500209 13.4342C0.494406 13.8133 0.609277 14.1836 0.826382 14.4854L3.74052 18.5397C4.40185 19.4599 4.73252 19.92 5.12932 20.2775C5.73732 20.8234 6.46266 21.2023 7.24559 21.3827C7.75759 21.5 8.30906 21.5 9.41093 21.5C11.5123 21.5 12.5629 21.5 13.3992 21.1651C14.0291 20.9143 14.6022 20.5263 15.0811 20.0262C15.56 19.5261 15.934 18.9251 16.1789 18.2622C16.5 17.3894 16.5 16.2932 16.5 14.1009V11.6052C16.4967 11.1241 16.3319 10.6599 16.0349 10.2953C15.738 9.93073 15.3282 9.68953 14.8787 9.61471L14.548 9.55832C14.4313 9.5369 14.3116 9.54256 14.1972 9.5749C14.0828 9.60724 13.9764 9.6655 13.8854 9.74563C13.7943 9.82576 13.7209 9.92585 13.6701 10.039C13.6193 10.1521 13.5924 10.2755 13.5912 10.4007M7.77252 7.87798L8.33252 7.58702C8.60239 7.44606 8.90319 7.35584 9.19652 7.42914C9.61703 7.5315 9.99253 7.78096 10.2622 8.1371C10.5319 8.49324 10.6799 8.93521 10.6824 9.39141M7.77252 7.87798V10.4007M13.5912 10.4007C13.5912 9.28541 12.7229 8.38208 11.652 8.38208C11.1165 8.38208 10.6824 8.83431 10.6824 9.39141M13.5912 10.4007V11.4101M10.6824 9.39141V10.4007"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Flip wrapper — pure CSS transition, NOT Framer Motion animate.
                 Framer Motion serialises rotateY as matrix3d which silently
                 flattens preserve-3d and breaks backfaceVisibility. */}
