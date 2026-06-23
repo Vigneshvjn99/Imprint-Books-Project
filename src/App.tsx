@@ -6,6 +6,7 @@ import { BookModal } from './components/BookModal';
 import { Search, ChevronUp, Sun, Moon } from 'lucide-react';
 import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
 import { Logo } from './components/ui/Logo';
+import TextType from './components/ui/TextType';
 
 function generateBooks(): Book[] {
   const baseBooks = [
@@ -187,8 +188,37 @@ function App() {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: 'easeOut' }}
+                className="flex items-center gap-3.5 select-none"
               >
-                <Logo className="h-10 w-auto" />
+                {/* Book Symbol SVG */}
+                <svg
+                  viewBox="0 0 218 290"
+                  className="h-10 w-auto text-black dark:text-white fill-current transition-colors duration-500"
+                >
+                  <path
+                    d="M0 240.963V26.5281L39.9834 0L218 48.6348V276L178.811 290L0 240.963Z"
+                    className="fill-current"
+                  />
+                  <path
+                    d="M55.9288 24L30 40.1983L169.94 78L193 61.0421L55.9288 24Z"
+                    className="fill-[#fbfaf5] dark:fill-[#161616] transition-colors duration-500"
+                  />
+                  <path
+                    d="M198.666 107.434L170.249 92.0752L170.249 257.072L198.666 266.066L198.666 107.434Z"
+                    className="fill-[#fbfaf5] dark:fill-[#161616] transition-colors duration-500"
+                  />
+                </svg>
+
+                {/* Typed Wordmark */}
+                <TextType
+                  text="Imprint"
+                  as="span"
+                  loop={false}
+                  showCursor={true}
+                  typingSpeed={90}
+                  initialDelay={300}
+                  className="font-['Bluu_Next'] font-bold text-[32px] tracking-[0.5px] text-black dark:text-white leading-none mt-1"
+                />
               </motion.div>
 
               {/* Progress Container */}
