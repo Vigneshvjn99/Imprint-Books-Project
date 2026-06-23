@@ -28,7 +28,7 @@ function generateBooks(): Book[] {
     { title: 'User Friendly', author: 'Cliff Kuang', image: '/books/book_16.png', category: 'Product Design' },
     { title: 'Hooked', author: 'Nir Eyal', image: '/books/book_17.png', category: 'Product Design' },
     { title: 'Creative Confidence', author: 'Tom Kelley & David Kelley', image: '/books/book_18.png', category: 'Product Design', width: 222, height: 334 },
-    { title: '100 Things Every Designer Needs to Know', author: 'Susan M. Weinschenk', image: '/books/book_19.png', category: 'Product Design', width: 250, height: 320 },
+    { title: '100 Things Every Designer Needs to Know', author: 'Susan M. Weinschenk', image: '/books/book_19.png', category: 'Product Design', width: 220, height: 282 },
     { title: 'Steal Like an Artist', author: 'Austin Kleon', image: '/books/book_20.png', category: 'Product Design', width: 240, height: 240 },
     { title: 'Laws of UX', author: 'Jon Yablonski', image: '/books/book_21.png', backCover: '/books/back_book_21.png', category: 'Product Design', width: 222, height: 334 },
     { title: 'Interaction of Color', author: 'Josef Albers', image: '/books/book_22.png', backCover: '/books/back_book_22.png', category: 'Graphic Design', width: 218, height: 334 },
