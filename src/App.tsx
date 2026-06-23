@@ -76,6 +76,8 @@ function App() {
   // Cover preloading state
   const [isPreloading, setIsPreloading] = useState(true);
   const [preloadProgress, setPreloadProgress] = useState(0);
+  const [assetsLoaded, setAssetsLoaded] = useState(false);
+  const [isTypingFinished, setIsTypingFinished] = useState(false);
 
   useEffect(() => {
     // Collect all unique images & assets to preload
@@ -93,7 +95,7 @@ function App() {
     const totalCount = assetsToPreload.length;
 
     if (totalCount === 0) {
-      setIsPreloading(false);
+      setAssetsLoaded(true);
       return;
     }
 
@@ -102,10 +104,7 @@ function App() {
       const progress = Math.round((loadedCount / totalCount) * 100);
       setPreloadProgress(progress);
       if (loadedCount >= totalCount) {
-        // Delay slightly for smooth completion animation transition
-        setTimeout(() => {
-          setIsPreloading(false);
-        }, 350);
+        setAssetsLoaded(true);
       }
     };
 
@@ -116,6 +115,16 @@ function App() {
       img.onerror = handleAssetLoaded; // continue if a load fails
     });
   }, [books]);
+
+  // Only disable preloader when both assets are fully loaded AND logo typing has finished
+  useEffect(() => {
+    if (assetsLoaded && isTypingFinished) {
+      const timeoutId = setTimeout(() => {
+        setIsPreloading(false);
+      }, 450); // Small visual rest after completion
+      return () => clearTimeout(timeoutId);
+    }
+  }, [assetsLoaded, isTypingFinished]);
   
 
   const playSoftClick = (type: 'open' | 'close' = 'open') => {
@@ -219,6 +228,7 @@ function App() {
                   initialDelay={300}
                   className="font-bold text-[36px] tracking-[-0.8px] text-black dark:text-white leading-none mt-1"
                   style={{ fontFamily: "'Rustic Wave', sans-serif" }}
+                  onSentenceComplete={() => setIsTypingFinished(true)}
                 />
               </motion.div>
 
