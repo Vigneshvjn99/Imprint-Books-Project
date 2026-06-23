@@ -217,7 +217,8 @@ function App() {
                   showCursor={true}
                   typingSpeed={90}
                   initialDelay={300}
-                  className="font-['Bluu_Next'] font-bold text-[32px] tracking-[0.5px] text-black dark:text-white leading-none mt-1"
+                  className="font-bold text-[36px] tracking-[0.5px] text-black dark:text-white leading-none mt-1"
+                  style={{ fontFamily: "'Rustic Wave', sans-serif" }}
                 />
               </motion.div>
 
