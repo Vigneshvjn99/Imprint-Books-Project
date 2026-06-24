@@ -236,7 +236,10 @@ function App() {
 
       <InfiniteCanvas>
         {/* Populating sideways (columns) using 5 rows (flows up to 6 columns) to achieve balanced horizontal/vertical scroll */}
-        <div className="grid grid-rows-5 grid-flow-col gap-0 w-max h-max p-[100px] bg-[#fbfaf5] dark:bg-[#161616] transition-colors duration-700">
+        <div 
+          className="grid grid-rows-5 grid-flow-col gap-0 w-max h-max p-[100px] bg-[#fbfaf5] dark:bg-[#161616] transition-colors duration-700"
+          style={{ transformStyle: 'preserve-3d' }}
+        >
           {books.map((book, index) => {
             const matchesSearch = searchQuery === '' || 
               book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 

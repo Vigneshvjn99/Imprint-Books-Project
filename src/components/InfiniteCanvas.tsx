@@ -56,6 +56,24 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
 
   const clamp = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val));
 
+  // Calculates the minimum scale required so the book grid canvas completely covers the viewport.
+  // This locks zoom-out so the plain background is never revealed.
+  const getMinScale = useCallback(() => {
+    if (!containerRef.current || !gridRef.current) return 0.35;
+    const viewportWidth = containerRef.current.clientWidth;
+    const viewportHeight = containerRef.current.clientHeight;
+    const gridWidth = gridRef.current.scrollWidth;
+    const gridHeight = gridRef.current.scrollHeight;
+
+    // Ratios of viewport to actual untransformed grid dimensions
+    const scaleToFitWidth = viewportWidth / gridWidth;
+    const scaleToFitHeight = viewportHeight / gridHeight;
+
+    // Use the max of the two ratios to ensure the grid covers both dimensions fully.
+    // Clamped to a minimum baseline of 0.35.
+    return Math.max(0.35, Math.max(scaleToFitWidth, scaleToFitHeight));
+  }, []);
+
   const getBounds = useCallback((scaleVal = scale.get()) => {
     if (!containerRef.current || !gridRef.current) return { minX: 0, maxX: 0, minY: 0, maxY: 0 };
     const viewportWidth = containerRef.current.clientWidth;
@@ -102,8 +120,9 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
     const curX = x.get();
     const curY = y.get();
 
-    // Scale range clamp: 0.35x to 2.0x
-    const clampedScale = Math.max(0.35, Math.min(2.0, nextScale));
+    // Scale range clamp: dynamically locked by minScale up to 2.0x
+    const minScale = getMinScale();
+    const clampedScale = Math.max(minScale, Math.min(2.0, nextScale));
     if (clampedScale === curScale) return;
 
     const scaleRatio = clampedScale / curScale;
@@ -115,7 +134,29 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
     const { minX, maxX, minY, maxY } = getBounds(clampedScale);
     x.set(clamp(newX, minX, maxX));
     y.set(clamp(newY, minY, maxY));
-  }, [x, y, scale, getBounds]);
+  }, [x, y, scale, getBounds, getMinScale]);
+
+  // Handle window resizing dynamically to enforce minScale and layout bounds
+  useEffect(() => {
+    const handleResize = () => {
+      const minScale = getMinScale();
+      const curScale = scale.get();
+      
+      if (curScale < minScale) {
+        if (!containerRef.current) return;
+        const focusX = containerRef.current.clientWidth / 2;
+        const focusY = containerRef.current.clientHeight / 2;
+        zoomTo(minScale, focusX, focusY);
+      } else {
+        const { minX, maxX, minY, maxY } = getBounds(curScale);
+        x.set(clamp(x.get(), minX, maxX));
+        y.set(clamp(y.get(), minY, maxY));
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [getBounds, getMinScale, scale, x, y, zoomTo]);
 
   // rAF-based inertia loop with rubber-band edge resistance + spring-back
   const startInertia = useCallback(() => {
@@ -303,12 +344,13 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
       >
         <motion.div
           ref={gridRef}
-          className="absolute top-0 left-0 will-change-transform"
+          className="absolute top-0 left-0 will-change-transform animate-none"
           style={{ 
             x, 
             y, 
             scale,
-            transformOrigin: '0 0'
+            transformOrigin: '0 0',
+            transformStyle: 'preserve-3d'
           }}
         >
           {children}

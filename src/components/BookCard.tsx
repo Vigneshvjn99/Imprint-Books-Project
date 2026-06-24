@@ -40,11 +40,14 @@ export function BookCard({ book, onSelect, isMatched = true, isFirstRow, isFirst
   return (
     <div 
       // 500x500 cell, 1px perfect border logic, 20px inner padding
-      className={`bg-[#fbfaf5] dark:bg-[#161616] border-b border-r ${isFirstRow ? 'border-t' : ''} ${isFirstCol ? 'border-l' : ''} border-black/[0.04] dark:border-white/[0.04] overflow-clip relative shrink-0 w-[500px] h-[500px] transition-colors duration-700`}
+      className={`bg-[#fbfaf5] dark:bg-[#161616] border-b border-r ${isFirstRow ? 'border-t' : ''} ${isFirstCol ? 'border-l' : ''} border-black/[0.04] dark:border-white/[0.04] relative shrink-0 w-[500px] h-[500px] transition-colors duration-700`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className={`w-full h-full p-5 transition-all duration-700 ${isMatched ? 'opacity-100' : 'opacity-10 grayscale pointer-events-none'}`}>
+      <div 
+        className={`w-full h-full p-5 transition-all duration-700 ${isMatched ? 'opacity-100' : 'opacity-10 grayscale pointer-events-none'}`}
+        style={{ transformStyle: 'preserve-3d' }}
+      >
         <div 
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
           style={{ 
