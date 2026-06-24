@@ -577,6 +577,7 @@ export function BookModal({ book, onClose }: BookModalProps) {
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                     className="w-[18px] h-auto"
+                    style={{ transform: 'rotate(35deg)' }}
                   >
                     <path
                       d="M10.5 4.5C10.5 3.43913 10.0259 2.42172 9.18198 1.67157C8.33807 0.921427 7.19347 0.5 6 0.5C4.80653 0.5 3.66193 0.921427 2.81802 1.67157C1.97411 2.42172 1.5 3.43913 1.5 4.5"
