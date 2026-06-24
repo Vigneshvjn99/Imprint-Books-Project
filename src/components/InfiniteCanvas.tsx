@@ -9,9 +9,9 @@ interface InfiniteCanvasProps {
   children: React.ReactNode;
 }
 
+const ZOOM_LEVELS = [0.6, 1.0, 1.2];
+
 // Rubber-band formula: allows slight overshoot past edges with resistance.
-// The further past the bound, the more resistance is applied.
-// coeff controls how elastic the stretch feels (0 = wall, 1 = no resistance)
 const rubberband = (pos: number, bound: number, coeff: number): number => {
   if (coeff === 0) return pos;
   const overshoot = pos - bound;
@@ -56,36 +56,39 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
 
   const clamp = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val));
 
-  // Calculates the minimum scale required so the book grid canvas completely covers the viewport.
-  // This locks zoom-out so the plain background is never revealed.
-  const getMinScale = useCallback(() => {
-    if (!containerRef.current || !gridRef.current) return 0.35;
-    const viewportWidth = containerRef.current.clientWidth;
-    const viewportHeight = containerRef.current.clientHeight;
-    const gridWidth = gridRef.current.scrollWidth;
-    const gridHeight = gridRef.current.scrollHeight;
-
-    // Ratios of viewport to actual untransformed grid dimensions
-    const scaleToFitWidth = viewportWidth / gridWidth;
-    const scaleToFitHeight = viewportHeight / gridHeight;
-
-    // Use the max of the two ratios to ensure the grid covers both dimensions fully.
-    // Clamped to a minimum baseline of 0.35.
-    return Math.max(0.35, Math.max(scaleToFitWidth, scaleToFitHeight));
-  }, []);
-
+  // Dynamic bounds calculation with centering if grid is smaller than the viewport
   const getBounds = useCallback((scaleVal = scale.get()) => {
     if (!containerRef.current || !gridRef.current) return { minX: 0, maxX: 0, minY: 0, maxY: 0 };
     const viewportWidth = containerRef.current.clientWidth;
     const viewportHeight = containerRef.current.clientHeight;
     const gridWidth = gridRef.current.scrollWidth;
     const gridHeight = gridRef.current.scrollHeight;
-    
-    // Scale-adjusted bounds (assuming transform-origin is 0 0)
-    const minX = Math.min(0, viewportWidth - gridWidth * scaleVal);
-    const maxX = 0;
-    const minY = Math.min(0, viewportHeight - gridHeight * scaleVal);
-    const maxY = 0;
+
+    const scaledWidth = gridWidth * scaleVal;
+    const scaledHeight = gridHeight * scaleVal;
+
+    let minX, maxX;
+    if (scaledWidth <= viewportWidth) {
+      // Strictly center the grid if it's smaller than the viewport
+      const centerX = (viewportWidth - scaledWidth) / 2;
+      minX = centerX;
+      maxX = centerX;
+    } else {
+      minX = viewportWidth - scaledWidth;
+      maxX = 0;
+    }
+
+    let minY, maxY;
+    if (scaledHeight <= viewportHeight) {
+      // Strictly center the grid if it's smaller than the viewport
+      const centerY = (viewportHeight - scaledHeight) / 2;
+      minY = centerY;
+      maxY = centerY;
+    } else {
+      minY = viewportHeight - scaledHeight;
+      maxY = 0;
+    }
+
     return { minX, maxX, minY, maxY };
   }, [scale]);
 
@@ -100,19 +103,19 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
       const gridHeight = gridRef.current!.scrollHeight;
 
       const currentScale = scale.get();
-      const minX = Math.min(0, viewportWidth - gridWidth * currentScale);
-      const minY = Math.min(0, viewportHeight - gridHeight * currentScale);
+      const { minX, maxX, minY, maxY } = getBounds(currentScale);
 
-      const initialX = Math.max(minX, Math.min(0, (viewportWidth - gridWidth * currentScale) / 2));
-      const initialY = Math.max(minY, Math.min(0, (viewportHeight - gridHeight * currentScale) / 2));
+      // Centered or clamped initial coordinates
+      const initialX = minX === maxX ? minX : (viewportWidth - gridWidth * currentScale) / 2;
+      const initialY = minY === maxY ? minY : (viewportHeight - gridHeight * currentScale) / 2;
 
-      x.jump(initialX);
-      y.jump(initialY);
+      x.jump(clamp(initialX, minX, maxX));
+      y.jump(clamp(initialY, minY, maxY));
     };
 
     const timeoutId = setTimeout(centerCanvas, 50);
     return () => clearTimeout(timeoutId);
-  }, [x, y, scale]);
+  }, [x, y, scale, getBounds]);
 
   // Core Zoom Calculation: scales around a viewport focus coordinate (focusX, focusY)
   const zoomTo = useCallback((nextScale: number, focusX: number, focusY: number) => {
@@ -120,52 +123,40 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
     const curX = x.get();
     const curY = y.get();
 
-    // Scale range clamp: dynamically locked by minScale up to 2.0x
-    const minScale = getMinScale();
-    const clampedScale = Math.max(minScale, Math.min(2.0, nextScale));
-    if (clampedScale === curScale) return;
+    if (nextScale === curScale) return;
 
-    const scaleRatio = clampedScale / curScale;
+    const scaleRatio = nextScale / curScale;
     const newX = focusX - (focusX - curX) * scaleRatio;
     const newY = focusY - (focusY - curY) * scaleRatio;
 
-    scale.set(clampedScale);
+    scale.set(nextScale);
 
-    const { minX, maxX, minY, maxY } = getBounds(clampedScale);
+    const { minX, maxX, minY, maxY } = getBounds(nextScale);
     x.set(clamp(newX, minX, maxX));
     y.set(clamp(newY, minY, maxY));
-  }, [x, y, scale, getBounds, getMinScale]);
+  }, [x, y, scale, getBounds]);
 
-  // Handle window resizing dynamically to enforce minScale and layout bounds
+  // Handle window resizing dynamically to clamp positioning
   useEffect(() => {
     const handleResize = () => {
-      const minScale = getMinScale();
       const curScale = scale.get();
-      
-      if (curScale < minScale) {
-        if (!containerRef.current) return;
-        const focusX = containerRef.current.clientWidth / 2;
-        const focusY = containerRef.current.clientHeight / 2;
-        zoomTo(minScale, focusX, focusY);
-      } else {
-        const { minX, maxX, minY, maxY } = getBounds(curScale);
-        x.set(clamp(x.get(), minX, maxX));
-        y.set(clamp(y.get(), minY, maxY));
-      }
+      const { minX, maxX, minY, maxY } = getBounds(curScale);
+      x.set(clamp(x.get(), minX, maxX));
+      y.set(clamp(y.get(), minY, maxY));
     };
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [getBounds, getMinScale, scale, x, y, zoomTo]);
+  }, [getBounds, scale, x, y]);
 
   // rAF-based inertia loop with rubber-band edge resistance + spring-back
   const startInertia = useCallback(() => {
     if (rafId.current !== null) cancelAnimationFrame(rafId.current);
 
     const FRICTION = 0.88;       // velocity decay per frame
-    const OUT_FRICTION = 0.72;   // stronger friction when outside bounds (resist overshoot)
+    const OUT_FRICTION = 0.72;   // stronger friction when outside bounds
     const MIN_VEL = 0.5;         // stop threshold in px
-    const SNAPBACK_VEL = 12;     // px/frame at which we switch to spring snap-back
+    const SNAPBACK_VEL = 12;     // px/frame for fast snap-back
 
     const loop = () => {
       const { minX, maxX, minY, maxY } = getBounds();
@@ -210,7 +201,7 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
     rafId.current = requestAnimationFrame(loop);
   }, [getBounds, x, y]);
 
-  // Handle gestures (drag, wheel, pinch-to-zoom)
+  // Handle gestures (drag and scroll pan)
   useGesture(
     {
       onDrag: ({ offset: [dx, dy] }) => {
@@ -230,15 +221,8 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
       },
       onWheel: ({ event, delta: [dx, dy] }) => {
         if (event.ctrlKey) {
+          // Disable trackpad pinch zoom / mouse wheel zoom
           event.preventDefault();
-          const rect = containerRef.current?.getBoundingClientRect();
-          const focusX = event.clientX - (rect?.left || 0);
-          const focusY = event.clientY - (rect?.top || 0);
-
-          // dy is negative for pinch-out (zoom in), positive for pinch-in (zoom out)
-          const factor = 1 - dy * 0.008;
-          const nextScale = scale.get() * factor;
-          zoomTo(nextScale, focusX, focusY);
           return;
         }
 
@@ -259,17 +243,6 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
         velY.current = clamp(velY.current, -MAX_VEL, MAX_VEL);
 
         startInertia();
-      },
-      onPinch: ({ origin: [ox, oy], first, movement: [s], memo }) => {
-        if (first) {
-          memo = scale.get();
-        }
-        const rect = containerRef.current?.getBoundingClientRect();
-        const focusX = ox - (rect?.left || 0);
-        const focusY = oy - (rect?.top || 0);
-        const nextScale = memo * s;
-        zoomTo(nextScale, focusX, focusY);
-        return memo;
       }
     },
     {
@@ -283,9 +256,6 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
         rubberband: 0.15
       },
       wheel: {
-        eventOptions: { passive: false }
-      },
-      pinch: {
         eventOptions: { passive: false }
       }
     }
@@ -303,37 +273,40 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
     };
   }, []);
 
-  // UI Button Actions
+  // Discrete UI Button Actions: toggle between 0.6, 1.0, 1.2
   const zoomIn = () => {
     if (!containerRef.current) return;
+    const curScale = scale.get();
+    
+    // Find the next zoom level strictly greater than current
+    const nextScale = ZOOM_LEVELS.find(lvl => lvl > curScale + 0.01) || ZOOM_LEVELS[ZOOM_LEVELS.length - 1];
+    
     const focusX = containerRef.current.clientWidth / 2;
     const focusY = containerRef.current.clientHeight / 2;
-    zoomTo(scale.get() + 0.15, focusX, focusY);
+    zoomTo(nextScale, focusX, focusY);
   };
 
   const zoomOut = () => {
     if (!containerRef.current) return;
+    const curScale = scale.get();
+    
+    // Find the previous zoom level strictly less than current
+    const prevScale = [...ZOOM_LEVELS].reverse().find(lvl => lvl < curScale - 0.01) || ZOOM_LEVELS[0];
+    
     const focusX = containerRef.current.clientWidth / 2;
     const focusY = containerRef.current.clientHeight / 2;
-    zoomTo(scale.get() - 0.15, focusX, focusY);
+    zoomTo(prevScale, focusX, focusY);
   };
 
   const resetZoom = () => {
     if (!containerRef.current || !gridRef.current) return;
     const viewportWidth = containerRef.current.clientWidth;
     const viewportHeight = containerRef.current.clientHeight;
-    const gridWidth = gridRef.current.scrollWidth;
-    const gridHeight = gridRef.current.scrollHeight;
-
-    scale.set(1.0);
-
-    const minX = Math.min(0, viewportWidth - gridWidth);
-    const minY = Math.min(0, viewportHeight - gridHeight);
-    const initialX = Math.max(minX, Math.min(0, (viewportWidth - gridWidth) / 2));
-    const initialY = Math.max(minY, Math.min(0, (viewportHeight - gridHeight) / 2));
-
-    x.set(initialX);
-    y.set(initialY);
+    
+    const nextScale = 1.0;
+    const focusX = viewportWidth / 2;
+    const focusY = viewportHeight / 2;
+    zoomTo(nextScale, focusX, focusY);
   };
 
   return (
@@ -375,7 +348,7 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
             whileTap={{ scale: 0.95 }}
             onClick={resetZoom}
             className="py-1 px-1.5 rounded-lg text-black/70 dark:text-white/70 font-sans font-semibold text-[10px] text-center cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors flex items-center justify-center min-w-[32px] select-none"
-            title="Reset Zoom"
+            title="Reset Zoom (100%)"
           >
             {scaleDisplay}%
           </motion.button>
