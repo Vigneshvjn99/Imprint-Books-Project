@@ -87,7 +87,6 @@ export function BookCard({ book, onSelect, isMatched = true, isFirstRow, isFirst
 
           {/* --- FRONT COVER (Animates to open) --- */}
           <motion.div
-            layoutId={`book-cover-${book.id}`}
             className="absolute inset-0 rounded-[3px] overflow-hidden"
             style={{ 
               originX: 0, 
