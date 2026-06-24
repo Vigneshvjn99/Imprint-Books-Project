@@ -1,15 +1,12 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import { useGesture } from '@use-gesture/react';
 import { motion, useSpring, MotionValue } from 'framer-motion';
-import { ZoomIn, ZoomOut } from 'lucide-react';
 
 export const CanvasContext = React.createContext<{ x: MotionValue<number>, y: MotionValue<number> } | null>(null);
 
 interface InfiniteCanvasProps {
   children: React.ReactNode;
 }
-
-const ZOOM_LEVELS = [0.6, 1.0, 1.2];
 
 // Rubber-band formula: allows slight overshoot past edges with resistance.
 const rubberband = (pos: number, bound: number, coeff: number): number => {
@@ -36,17 +33,7 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
   // Springs — tight and responsive for drag, scroll, and zoom
   const x = useSpring(0, { stiffness: 200, damping: 28, mass: 0.4 });
   const y = useSpring(0, { stiffness: 200, damping: 28, mass: 0.4 });
-  const scale = useSpring(1, { stiffness: 200, damping: 28, mass: 0.4 });
-
-  // Real-time scale percentage display
-  const [scaleDisplay, setScaleDisplay] = React.useState(100);
-
-  useEffect(() => {
-    const unsubscribe = scale.on('change', (latest) => {
-      setScaleDisplay(Math.round(latest * 100));
-    });
-    return unsubscribe;
-  }, [scale]);
+  const scale = useSpring(1, { stiffness: 200, damping: 28, mass: 0.4 }); // Default scale is 1.0 (100%)
 
   // Inertia state
   const velX = useRef(0);
@@ -55,6 +42,24 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
   const lastWheelTime = useRef(0);
 
   const clamp = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val));
+
+  // Calculates the minimum scale required so the book grid canvas completely covers the viewport.
+  // This locks zoom-out so the plain background is never revealed.
+  const getMinScale = useCallback(() => {
+    if (!containerRef.current || !gridRef.current) return 0.35;
+    const viewportWidth = containerRef.current.clientWidth;
+    const viewportHeight = containerRef.current.clientHeight;
+    const gridWidth = gridRef.current.scrollWidth;
+    const gridHeight = gridRef.current.scrollHeight;
+
+    // Ratios of viewport to actual untransformed grid dimensions
+    const scaleToFitWidth = viewportWidth / gridWidth;
+    const scaleToFitHeight = viewportHeight / gridHeight;
+
+    // Use the max of the two ratios to ensure the grid covers both dimensions fully.
+    // Clamped to a minimum baseline of 0.35.
+    return Math.max(0.35, Math.max(scaleToFitWidth, scaleToFitHeight));
+  }, []);
 
   // Dynamic bounds calculation with centering if grid is smaller than the viewport
   const getBounds = useCallback((scaleVal = scale.get()) => {
@@ -123,31 +128,43 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
     const curX = x.get();
     const curY = y.get();
 
-    if (nextScale === curScale) return;
+    // Scale range clamp: dynamically locked by minScale up to 2.0x
+    const minScale = getMinScale();
+    const clampedScale = Math.max(minScale, Math.min(2.0, nextScale));
+    if (clampedScale === curScale) return;
 
-    const scaleRatio = nextScale / curScale;
+    const scaleRatio = clampedScale / curScale;
     const newX = focusX - (focusX - curX) * scaleRatio;
     const newY = focusY - (focusY - curY) * scaleRatio;
 
-    scale.set(nextScale);
+    scale.set(clampedScale);
 
-    const { minX, maxX, minY, maxY } = getBounds(nextScale);
+    const { minX, maxX, minY, maxY } = getBounds(clampedScale);
     x.set(clamp(newX, minX, maxX));
     y.set(clamp(newY, minY, maxY));
-  }, [x, y, scale, getBounds]);
+  }, [x, y, scale, getBounds, getMinScale]);
 
   // Handle window resizing dynamically to clamp positioning
   useEffect(() => {
     const handleResize = () => {
+      const minScale = getMinScale();
       const curScale = scale.get();
-      const { minX, maxX, minY, maxY } = getBounds(curScale);
-      x.set(clamp(x.get(), minX, maxX));
-      y.set(clamp(y.get(), minY, maxY));
+      
+      if (curScale < minScale) {
+        if (!containerRef.current) return;
+        const focusX = containerRef.current.clientWidth / 2;
+        const focusY = containerRef.current.clientHeight / 2;
+        zoomTo(minScale, focusX, focusY);
+      } else {
+        const { minX, maxX, minY, maxY } = getBounds(curScale);
+        x.set(clamp(x.get(), minX, maxX));
+        y.set(clamp(y.get(), minY, maxY));
+      }
     };
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [getBounds, scale, x, y]);
+  }, [getBounds, getMinScale, scale, x, y, zoomTo]);
 
   // rAF-based inertia loop with rubber-band edge resistance + spring-back
   const startInertia = useCallback(() => {
@@ -201,7 +218,7 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
     rafId.current = requestAnimationFrame(loop);
   }, [getBounds, x, y]);
 
-  // Handle gestures (drag and scroll pan)
+  // Handle gestures (drag, scroll, and pinch-to-zoom)
   useGesture(
     {
       onDrag: ({ offset: [dx, dy] }) => {
@@ -221,8 +238,15 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
       },
       onWheel: ({ event, delta: [dx, dy] }) => {
         if (event.ctrlKey) {
-          // Disable trackpad pinch zoom / mouse wheel zoom
           event.preventDefault();
+          const rect = containerRef.current?.getBoundingClientRect();
+          const focusX = event.clientX - (rect?.left || 0);
+          const focusY = event.clientY - (rect?.top || 0);
+
+          // dy is negative for pinch-out (zoom in), positive for pinch-in (zoom out)
+          const factor = 1 - dy * 0.008;
+          const nextScale = scale.get() * factor;
+          zoomTo(nextScale, focusX, focusY);
           return;
         }
 
@@ -243,6 +267,17 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
         velY.current = clamp(velY.current, -MAX_VEL, MAX_VEL);
 
         startInertia();
+      },
+      onPinch: ({ origin: [ox, oy], first, movement: [s], memo }) => {
+        if (first) {
+          memo = scale.get();
+        }
+        const rect = containerRef.current?.getBoundingClientRect();
+        const focusX = ox - (rect?.left || 0);
+        const focusY = oy - (rect?.top || 0);
+        const nextScale = memo * s;
+        zoomTo(nextScale, focusX, focusY);
+        return memo;
       }
     },
     {
@@ -256,6 +291,9 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
         rubberband: 0.15
       },
       wheel: {
+        eventOptions: { passive: false }
+      },
+      pinch: {
         eventOptions: { passive: false }
       }
     }
@@ -272,42 +310,6 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
       if (rafId.current !== null) cancelAnimationFrame(rafId.current);
     };
   }, []);
-
-  // Discrete UI Button Actions: toggle between 0.6, 1.0, 1.2
-  const zoomIn = () => {
-    if (!containerRef.current) return;
-    const curScale = scale.get();
-    
-    // Find the next zoom level strictly greater than current
-    const nextScale = ZOOM_LEVELS.find(lvl => lvl > curScale + 0.01) || ZOOM_LEVELS[ZOOM_LEVELS.length - 1];
-    
-    const focusX = containerRef.current.clientWidth / 2;
-    const focusY = containerRef.current.clientHeight / 2;
-    zoomTo(nextScale, focusX, focusY);
-  };
-
-  const zoomOut = () => {
-    if (!containerRef.current) return;
-    const curScale = scale.get();
-    
-    // Find the previous zoom level strictly less than current
-    const prevScale = [...ZOOM_LEVELS].reverse().find(lvl => lvl < curScale - 0.01) || ZOOM_LEVELS[0];
-    
-    const focusX = containerRef.current.clientWidth / 2;
-    const focusY = containerRef.current.clientHeight / 2;
-    zoomTo(prevScale, focusX, focusY);
-  };
-
-  const resetZoom = () => {
-    if (!containerRef.current || !gridRef.current) return;
-    const viewportWidth = containerRef.current.clientWidth;
-    const viewportHeight = containerRef.current.clientHeight;
-    
-    const nextScale = 1.0;
-    const focusX = viewportWidth / 2;
-    const focusY = viewportHeight / 2;
-    zoomTo(nextScale, focusX, focusY);
-  };
 
   return (
     <CanvasContext.Provider value={{ x, y }}>
@@ -328,43 +330,6 @@ export function InfiniteCanvas({ children }: InfiniteCanvasProps) {
         >
           {children}
         </motion.div>
-
-        {/* Floating Zoom Controls */}
-        <div className="absolute bottom-24 right-6 z-40 flex flex-col items-center gap-1.5 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md p-1.5 rounded-2xl border border-black/5 dark:border-white/10 shadow-lg pointer-events-auto select-none">
-          <motion.button
-            whileHover={{ scale: 1.05, backgroundColor: 'rgba(0,0,0,0.05)' }}
-            whileTap={{ scale: 0.95 }}
-            onClick={zoomIn}
-            className="p-2 rounded-xl text-black dark:text-white cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors flex items-center justify-center"
-            title="Zoom In"
-          >
-            <ZoomIn className="w-[18px] h-[18px]" />
-          </motion.button>
-          
-          <div className="h-[1px] w-6 bg-black/5 dark:bg-white/10" />
-          
-          <motion.button
-            whileHover={{ scale: 1.05, backgroundColor: 'rgba(0,0,0,0.05)' }}
-            whileTap={{ scale: 0.95 }}
-            onClick={resetZoom}
-            className="py-1 px-1.5 rounded-lg text-black/70 dark:text-white/70 font-sans font-semibold text-[10px] text-center cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors flex items-center justify-center min-w-[32px] select-none"
-            title="Reset Zoom (100%)"
-          >
-            {scaleDisplay}%
-          </motion.button>
-          
-          <div className="h-[1px] w-6 bg-black/5 dark:bg-white/10" />
-          
-          <motion.button
-            whileHover={{ scale: 1.05, backgroundColor: 'rgba(0,0,0,0.05)' }}
-            whileTap={{ scale: 0.95 }}
-            onClick={zoomOut}
-            className="p-2 rounded-xl text-black dark:text-white cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors flex items-center justify-center"
-            title="Zoom Out"
-          >
-            <ZoomOut className="w-[18px] h-[18px]" />
-          </motion.button>
-        </div>
       </div>
     </CanvasContext.Provider>
   );
